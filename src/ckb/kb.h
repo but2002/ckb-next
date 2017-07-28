@@ -1,15 +1,14 @@
 #ifndef KB_H
 #define KB_H
 
-#include <QObject>
-#include <QFile>
-#include <QThread>
 #include "kbprofile.h"
+#include <QFile>
+#include <QObject>
+#include <QThread>
 
 // Class for managing devices
 
-class Kb : public QThread
-{
+class Kb : public QThread {
     Q_OBJECT
 public:
     // USB model and serial number
@@ -19,32 +18,32 @@ public:
     bool monochrome;
 
     // Keyboard model
-    inline KeyMap::Model    model() const                       { return _model; }
-    bool                    isKeyboard() const                  { return KeyMap::isKeyboard(_model); }
-    bool                    isMouse() const                     { return KeyMap::isMouse(_model); }
+    inline KeyMap::Model model() const { return _model; }
+    bool isKeyboard() const { return KeyMap::isKeyboard(_model); }
+    bool isMouse() const { return KeyMap::isMouse(_model); }
 
     // Frame rate (all devices). Also updates the event timer in KbManager.
-    static inline int               frameRate()                         { return _frameRate; }
-    static void                     frameRate(int newFrameRate);
+    static inline int frameRate() { return _frameRate; }
+    static void frameRate(int newFrameRate);
     // Layout (all devices)
-    static inline KeyMap::Layout    layout()                            { return _layout; }
-    static void                     layout(KeyMap::Layout newLayout);
+    static inline KeyMap::Layout layout() { return _layout; }
+    static void layout(KeyMap::Layout newLayout);
     // Whether dithering is used (all devices)
-    static inline bool              dither()                            { return _dither; }
-    static void                     dither(bool newDither);
+    static inline bool dither() { return _dither; }
+    static void dither(bool newDither);
     // Macro Delay setting
-    static inline bool              macroDelay()                        { return _delay; }
-    static void                     macroDelay(bool flag);
+    static inline bool macroDelay() { return _delay; }
+    static void macroDelay(bool flag);
     // OSX: mouse acceleration toggle (all devices)
-    static inline bool              mouseAccel()                        { return _mouseAccel; }
-    static void                     mouseAccel(bool newAccel);
+    static inline bool mouseAccel() { return _mouseAccel; }
+    static void mouseAccel(bool newAccel);
     // OSX: scroll speed (-1 = use acceleration)
-    static inline int               scrollSpeed()                       { return _scrollSpeed; }
-    static void                     scrollSpeed(int newSpeed);
+    static inline int scrollSpeed() { return _scrollSpeed; }
+    static void scrollSpeed(int newSpeed);
 
     // Profile saved to hardware
-    inline KbProfile*   hwProfile() { return _hwProfile; }
-    void                hwProfile(KbProfile* newHwProfile);
+    inline KbProfile* hwProfile() { return _hwProfile; }
+    void hwProfile(KbProfile* newHwProfile);
     // Required hardware modes
     int hwModeCount;
     const static int HWMODE_MAX = 3;
@@ -55,29 +54,44 @@ public:
     // Currently-selected profile
     inline KbProfile* currentProfile() { return _currentProfile; }
     // Profile list
-    inline const QList<KbProfile*>& profiles() const                                { return _profiles; }
-    void                            profiles(const QList<KbProfile*>& newProfiles)  { _needsSave = true; _profiles = newProfiles; }
-    void                            appendProfile(KbProfile* newProfile)            { _needsSave = true; _profiles.append(newProfile); }
-    inline int                      indexOf(KbProfile* profile)                     { return _profiles.indexOf(profile); }
-    inline KbProfile*               find(const QUuid& id)                           { foreach(KbProfile* profile, _profiles) { if(profile->id().guid == id) return profile; } return 0; }
+    inline const QList<KbProfile*>& profiles() const { return _profiles; }
+    void profiles(const QList<KbProfile*>& newProfiles)
+    {
+        _needsSave = true;
+        _profiles = newProfiles;
+    }
+    void appendProfile(KbProfile* newProfile)
+    {
+        _needsSave = true;
+        _profiles.append(newProfile);
+    }
+    inline int indexOf(KbProfile* profile) { return _profiles.indexOf(profile); }
+    inline KbProfile* find(const QUuid& id)
+    {
+        foreach (KbProfile* profile, _profiles) {
+            if (profile->id().guid == id)
+                return profile;
+        }
+        return 0;
+    }
 
     // Currently-selected mode
-    inline KbMode*  currentMode()   { return _currentMode; }
-    inline KbLight* currentLight()  { return !_currentMode ? 0 : _currentMode->light(); }
-    inline KbBind*  currentBind()   { return !_currentMode ? 0 : _currentMode->bind(); }
-    inline KbPerf*  currentPerf()   { return !_currentMode ? 0 : _currentMode->perf(); }
+    inline KbMode* currentMode() { return _currentMode; }
+    inline KbLight* currentLight() { return !_currentMode ? 0 : _currentMode->light(); }
+    inline KbBind* currentBind() { return !_currentMode ? 0 : _currentMode->bind(); }
+    inline KbPerf* currentPerf() { return !_currentMode ? 0 : _currentMode->perf(); }
 
     // Update selection
-    void        setCurrentProfile(KbProfile* profile, bool spontaneous = true);
-    void        setCurrentMode(KbProfile* profile, KbMode* mode, bool spontaneous = true);
-    inline void setCurrentMode(KbProfile* profile, int index, bool spontaneous = true)      { setCurrentMode(profile, profile->modes()[index], spontaneous); }
-    inline void setCurrentMode(KbMode* mode, bool spontaneous = true)                       { setCurrentMode(_currentProfile, mode, spontaneous); }
+    void setCurrentProfile(KbProfile* profile, bool spontaneous = true);
+    void setCurrentMode(KbProfile* profile, KbMode* mode, bool spontaneous = true);
+    inline void setCurrentMode(KbProfile* profile, int index, bool spontaneous = true) { setCurrentMode(profile, profile->modes()[index], spontaneous); }
+    inline void setCurrentMode(KbMode* mode, bool spontaneous = true) { setCurrentMode(_currentProfile, mode, spontaneous); }
 
     // Create a new profile/mode. The newly-created object will NOT be inserted into the current profile/mode list.
-    inline KbProfile*   newProfile()                    { return new KbProfile(this, getKeyMap()); }
-    inline KbProfile*   newProfile(KbProfile* other)    { return new KbProfile(this, getKeyMap(), *other); }
-    inline KbMode*      newMode()                       { return new KbMode(this, getKeyMap()); }
-    inline KbMode*      newMode(KbMode* other)          { return new KbMode(this, getKeyMap(), *other); }
+    inline KbProfile* newProfile() { return new KbProfile(this, getKeyMap()); }
+    inline KbProfile* newProfile(KbProfile* other) { return new KbProfile(this, getKeyMap(), *other); }
+    inline KbMode* newMode() { return new KbMode(this, getKeyMap()); }
+    inline KbMode* newMode(KbMode* other) { return new KbMode(this, getKeyMap(), *other); }
 
     // Load/save stored settings
     void load();
@@ -94,7 +108,7 @@ public:
     /// So there is no setter.
     /// \return The Number is returned as int.
     ///
-    inline int getMacroNumber () { return macroNumber; }
+    inline int getMacroNumber() { return macroNumber; }
 
     ///
     /// \brief getMacroPath returns the macroPath (e.g. /dev/input/ckb1/notify),
@@ -103,7 +117,7 @@ public:
     /// So there is no setter.
     /// \return The absolute path as String
     ///
-    inline QString getMacroPath () { return macroPath; }
+    inline QString getMacroPath() { return macroPath; }
 
     ~Kb();
 
@@ -142,7 +156,7 @@ private:
     friend class KbManager;
 
     // Creates a keyboard object with the given device path
-    Kb(QObject *parent, const QString& path);
+    Kb(QObject* parent, const QString& path);
 
     inline bool isOpen() const { return cmd.isOpen(); }
 
@@ -164,11 +178,11 @@ private:
     static int _frameRate, _scrollSpeed;
     static bool _dither, _mouseAccel;
 
-    KbProfile*          _currentProfile;
-    QList<KbProfile*>   _profiles;
-    KbMode*             _currentMode;
+    KbProfile* _currentProfile;
+    QList<KbProfile*> _profiles;
+    KbMode* _currentMode;
 
-    KeyMap::Model   _model;
+    KeyMap::Model _model;
 
     // Indicator light state
     bool iState[KbPerf::HW_I_COUNT];
@@ -180,10 +194,10 @@ private:
     // Current firmware update file
     QString fwUpdPath;
 
-    KbProfile*  _hwProfile;
+    KbProfile* _hwProfile;
     // Previously-selected profile and mode
-    KbProfile*  prevProfile;
-    KbMode*     prevMode;
+    KbProfile* prevProfile;
+    KbMode* prevMode;
     // Used to write the profile info when switching
     void writeProfileHeader();
 

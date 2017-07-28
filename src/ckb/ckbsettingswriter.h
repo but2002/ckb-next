@@ -1,8 +1,8 @@
 #ifndef CKBSETTINGSWRITER_H
 #define CKBSETTINGSWRITER_H
 
-#include <QObject>
 #include <QMap>
+#include <QObject>
 #include <QSettings>
 #include <QStringList>
 

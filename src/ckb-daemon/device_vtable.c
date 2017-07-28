@@ -8,19 +8,25 @@
 #include "profile.h"
 
 // Do-nothing functions
-static void cmd_none(usbdevice* kb, usbmode* dummy1, int dummy2, int dummy3, const char* dummy4){
+static void cmd_none(usbdevice* kb, usbmode* dummy1, int dummy2, int dummy3, const char* dummy4)
+{
 }
-static int cmd_io_none(usbdevice* kb, usbmode* dummy1, int dummy2, int dummy3, const char* dummy4){
+static int cmd_io_none(usbdevice* kb, usbmode* dummy1, int dummy2, int dummy3, const char* dummy4)
+{
     return 0;
 }
-static void cmd_macro_none(usbdevice* kb, usbmode* dummy1, int dummy2, const char* dummy3, const char* dummy4){
+static void cmd_macro_none(usbdevice* kb, usbmode* dummy1, int dummy2, const char* dummy3, const char* dummy4)
+{
 }
-static int loadprofile_none(usbdevice* kb){
+static int loadprofile_none(usbdevice* kb)
+{
     return 0;
 }
-static void int1_void_none(usbdevice* kb, int dummy){
+static void int1_void_none(usbdevice* kb, int dummy)
+{
 }
-static int int1_int_none(usbdevice* kb, int dummy){
+static int int1_int_none(usbdevice* kb, int dummy)
+{
     return 0;
 }
 
@@ -63,13 +69,13 @@ const devcmd vtable_keyboard = {
     .restart = cmd_restart,
 
     .start = start_dev,
-    .setmodeindex = int1_void_none,             ///< is just for non rgb keyboards
+    .setmodeindex = int1_void_none, ///< is just for non rgb keyboards
     .allocprofile = allocprofile,
     .loadprofile = loadprofile,
     .freeprofile = freeprofile,
     .updatergb = updatergb_kb,
     .updateindicators = updateindicators_kb,
-    .updatedpi = int1_int_none                  ///< This is for mice only
+    .updatedpi = int1_int_none ///< This is for mice only
 };
 
 // Non-RGB keyboard vtable (K70)
@@ -110,13 +116,13 @@ const devcmd vtable_keyboard_nonrgb = {
     .restart = cmd_restart,
 
     .start = start_kb_nrgb,
-    .setmodeindex = setmodeindex_nrgb,          ///< this is special for non RGBs
+    .setmodeindex = setmodeindex_nrgb, ///< this is special for non RGBs
     .allocprofile = allocprofile,
     .loadprofile = loadprofile_none,
     .freeprofile = freeprofile,
-    .updatergb = int1_int_none,                 ///< non RGB keyboards do not have an rgb update function
+    .updatergb = int1_int_none, ///< non RGB keyboards do not have an rgb update function
     .updateindicators = updateindicators_kb,
-    .updatedpi = int1_int_none                  ///< This is for mice only
+    .updatedpi = int1_int_none ///< This is for mice only
 };
 
 // RGB mouse vtable
@@ -157,11 +163,11 @@ const devcmd vtable_mouse = {
     .restart = cmd_restart,
 
     .start = start_dev,
-    .setmodeindex = int1_void_none,         ///< Mice do not have different modes
-    .allocprofile = allocprofile,           ///< same for all keyboards and mice
-    .loadprofile = loadprofile,             ///< same for all keyboards and mice
-    .freeprofile = freeprofile,             ///< same for all keyboards and mice
-    .updatergb = updatergb_mouse,           ///< special for mice
-    .updateindicators = int1_void_none,     ///< Mice do not have keyboard indicators like num
-    .updatedpi = updatedpi                  ///< special for mice
+    .setmodeindex = int1_void_none, ///< Mice do not have different modes
+    .allocprofile = allocprofile, ///< same for all keyboards and mice
+    .loadprofile = loadprofile, ///< same for all keyboards and mice
+    .freeprofile = freeprofile, ///< same for all keyboards and mice
+    .updatergb = updatergb_mouse, ///< special for mice
+    .updateindicators = int1_void_none, ///< Mice do not have keyboard indicators like num
+    .updatedpi = updatedpi ///< special for mice
 };

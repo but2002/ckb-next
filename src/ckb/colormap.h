@@ -1,19 +1,18 @@
 #ifndef COLORMAP_H
 #define COLORMAP_H
 
+#include "keymap.h"
 #include <QHash>
 #include <QRgb>
-#include "keymap.h"
 
 // Qt-based color map for use by classes outside KbLight
-typedef QHash<QString, QRgb>                QColorMap;
-typedef QHashIterator<QString, QRgb>        QColorMapIterator;
+typedef QHash<QString, QRgb> QColorMap;
+typedef QHashIterator<QString, QRgb> QColorMapIterator;
 typedef QMutableHashIterator<QString, QRgb> QMutableColorMapIterator;
 
 // ColorMap provides a flat, fast-access array for storing color values on a keyboard. Keys are sorted by name.
 
-class ColorMap
-{
+class ColorMap {
 public:
     ColorMap();
     ~ColorMap();
@@ -27,13 +26,13 @@ public:
     void clear();
 
     // Flat key -> color map
-    int                 count() const       { return _count; }
-    const char* const*  keyNames() const    { return _keyNames; }
-    QRgb*               colors()            { return _colors; }
-    const QRgb*         colors() const      { return _colors; }
+    int count() const { return _count; }
+    const char* const* keyNames() const { return _keyNames; }
+    QRgb* colors() { return _colors; }
+    const QRgb* colors() const { return _colors; }
 
     // Finds a color by key name. Returns null if the key isn't in the map.
-    QRgb*       colorForName(const char* name);
+    QRgb* colorForName(const char* name);
     const QRgb* colorForName(const char* name) const;
 
 private:

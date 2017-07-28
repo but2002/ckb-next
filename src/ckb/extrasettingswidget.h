@@ -7,12 +7,11 @@ namespace Ui {
 class ExtraSettingsWidget;
 }
 
-class ExtraSettingsWidget : public QDialog
-{
+class ExtraSettingsWidget : public QDialog {
     Q_OBJECT
 
 public:
-    explicit ExtraSettingsWidget(QWidget *parent = 0);
+    explicit ExtraSettingsWidget(QWidget* parent = 0);
     ~ExtraSettingsWidget();
 
     void pollUpdates();
@@ -30,7 +29,7 @@ private slots:
     void on_delayBox_clicked(bool checked);
 
 private:
-    Ui::ExtraSettingsWidget *ui;
+    Ui::ExtraSettingsWidget* ui;
 };
 
 #endif // EXTRASETTINGSWIDGET_H

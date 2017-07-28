@@ -65,10 +65,11 @@ static char kbsyspath[DEV_MAX][FILENAME_MAX];
 /// If DEBUG_USB is set during compilation,
 /// the number of bytes sent and their representation are logged to the error channel.
 ///
-int os_usbsend(usbdevice* kb, const uchar* out_msg, int is_recv, const char* file, int line) {
+int os_usbsend(usbdevice* kb, const uchar* out_msg, int is_recv, const char* file, int line)
+{
     int res;
     if (kb->fwversion >= 0x120 && !is_recv) {
-        struct usbdevfs_bulktransfer transfer = {0};
+        struct usbdevfs_bulktransfer transfer = { 0 };
         transfer.ep = (kb->fwversion >= 0x130 && kb->fwversion < 0x200) ? 4 : 3;
         transfer.len = MSG_SIZE;
         transfer.timeout = 5000;
@@ -79,18 +80,18 @@ int os_usbsend(usbdevice* kb, const uchar* out_msg, int is_recv, const char* fil
         res = ioctl(kb->handle - 1, USBDEVFS_CONTROL, &transfer);
     }
 
-    if (res <= 0){
+    if (res <= 0) {
         ckb_err_fn(" %s, res = 0x%x\n", file, line, res ? strerror(errno) : "No data written", res);
-        if(res == -1 && errno == ETIMEDOUT)
+        if (res == -1 && errno == ETIMEDOUT)
             return -1;
         else
             return 0;
     } else if (res != MSG_SIZE)
         ckb_warn_fn("Wrote %d bytes (expected %d)\n", file, line, res, MSG_SIZE);
 #ifdef DEBUG_USB
-    char converted[MSG_SIZE*3 + 1];
-    for(int i=0;i<MSG_SIZE;i++)
-        sprintf(&converted[i*3], "%02x ", out_msg[i]);
+    char converted[MSG_SIZE * 3 + 1];
+    for (int i = 0; i < MSG_SIZE; i++)
+        sprintf(&converted[i * 3], "%02x ", out_msg[i]);
     ckb_warn_fn("Sent %s\n", file, line, converted);
 #endif
     return res;
@@ -126,7 +127,8 @@ int os_usbsend(usbdevice* kb, const uchar* out_msg, int is_recv, const char* fil
 /// an error message is issued on the standard error channel
 /// [warning "Read YY bytes (expected 64)"].
 ///
-int os_usbrecv(usbdevice* kb, uchar* in_msg, const char* file, int line){
+int os_usbrecv(usbdevice* kb, uchar* in_msg, const char* file, int line)
+{
     int res;
     // This is what CUE does, but it doesn't seem to work on linux.
     /*if(kb->fwversion >= 0x130){
@@ -137,21 +139,21 @@ int os_usbrecv(usbdevice* kb, uchar* in_msg, const char* file, int line){
         transfer.data = in_msg;
         res = ioctl(kb->handle - 1, USBDEVFS_BULK, &transfer);
     } else {*/
-        struct usbdevfs_ctrltransfer transfer = { 0xa1, 0x01, 0x0300, kb->epcount - 1, MSG_SIZE, 5000, in_msg };
-        res = ioctl(kb->handle - 1, USBDEVFS_CONTROL, &transfer);
+    struct usbdevfs_ctrltransfer transfer = { 0xa1, 0x01, 0x0300, kb->epcount - 1, MSG_SIZE, 5000, in_msg };
+    res = ioctl(kb->handle - 1, USBDEVFS_CONTROL, &transfer);
     //}
-    if(res <= 0){
+    if (res <= 0) {
         ckb_err_fn("%s\n", file, line, res ? strerror(errno) : "No data read");
-        if(res == -1 && errno == ETIMEDOUT)
+        if (res == -1 && errno == ETIMEDOUT)
             return -1;
         else
             return 0;
-    } else if(res != MSG_SIZE)
+    } else if (res != MSG_SIZE)
         ckb_warn_fn("Read %d bytes (expected %d)\n", file, line, res, MSG_SIZE);
 #ifdef DEBUG_USB_RECV
-    char converted[MSG_SIZE*3 + 1];
-    for(int i=0;i<MSG_SIZE;i++)
-        sprintf(&converted[i*3], "%02x ", in_msg[i]);
+    char converted[MSG_SIZE * 3 + 1];
+    for (int i = 0; i < MSG_SIZE; i++)
+        sprintf(&converted[i * 3], "%02x ", in_msg[i]);
     ckb_warn_fn("Recv %s\n", file, line, converted);
 #endif
     return res;
@@ -185,12 +187,13 @@ int os_usbrecv(usbdevice* kb, uchar* in_msg, const char* file, int line){
 /// non RGB Keyboard | set light modus M3 in single-color keyboards | NK95_M3 | 0x0014 | 0x0003
 /// \see usb.h
 ///
-int _nk95cmd(usbdevice* kb, uchar bRequest, ushort wValue, const char* file, int line){
-    if(kb->product != P_K95_NRGB)
+int _nk95cmd(usbdevice* kb, uchar bRequest, ushort wValue, const char* file, int line)
+{
+    if (kb->product != P_K95_NRGB)
         return 0;
     struct usbdevfs_ctrltransfer transfer = { 0x40, bRequest, wValue, 0, 0, 5000, 0 };
     int res = ioctl(kb->handle - 1, USBDEVFS_CONTROL, &transfer);
-    if(res <= 0){
+    if (res <= 0) {
         ckb_err_fn("%s\n", file, line, res ? strerror(errno) : "No data written");
         return 1;
     }
@@ -210,11 +213,12 @@ int _nk95cmd(usbdevice* kb, uchar bRequest, ushort wValue, const char* file, int
 ///
 /// \n The ioctl command is USBDEVFS_CONTROL.
 ///
-void os_sendindicators(usbdevice* kb) {
+void os_sendindicators(usbdevice* kb)
+{
     static int countForReset = 0;
     struct usbdevfs_ctrltransfer transfer = { 0x21, 0x09, 0x0200, 0x00, 1, 500, &kb->ileds };
     int res = ioctl(kb->handle - 1, USBDEVFS_CONTROL, &transfer);
-    if(res <= 0) {
+    if (res <= 0) {
         ckb_err("%s\n", res ? strerror(errno) : "No data written");
         if (usb_tryreset(kb) == 0 && countForReset++ < 3) {
             os_sendindicators(kb);
@@ -235,7 +239,8 @@ void os_sendindicators(usbdevice* kb) {
 /// 7. return null
 ///
 
-void* os_inputmain(void* context){
+void* os_inputmain(void* context)
+{
     usbdevice* kb = context;
     int fd = kb->handle - 1;
     short vendor = kb->vendor, product = kb->product;
@@ -270,13 +275,13 @@ void* os_inputmain(void* context){
     /// non RGB Mouse or Keyboard | !IS_RGB | 2 | 15
     ///
     urbs[0].buffer_length = 8;
-    if(urbcount > 1 && IS_RGB(vendor, product)) {
-        if(IS_MOUSE(vendor, product))
+    if (urbcount > 1 && IS_RGB(vendor, product)) {
+        if (IS_MOUSE(vendor, product))
             urbs[1].buffer_length = 10;
         else
             urbs[1].buffer_length = 21;
         urbs[2].buffer_length = MSG_SIZE;
-        if(urbcount != 3)
+        if (urbcount != 3)
             urbs[urbcount - 1].buffer_length = MSG_SIZE;
     } else {
         urbs[1].buffer_length = 4;
@@ -285,7 +290,7 @@ void* os_inputmain(void* context){
 
     /// Now submit all the URBs via ioctl(USBDEVFS_SUBMITURB) with type USBDEVFS_URB_TYPE_INTERRUPT (the endpoints are defined as type interrupt).
     /// Endpoint number is 0x80..0x82 or 0x83, depending on the model.
-    for(int i = 0; i < urbcount; i++){
+    for (int i = 0; i < urbcount; i++) {
         urbs[i].type = USBDEVFS_URB_TYPE_INTERRUPT;
         urbs[i].endpoint = 0x80 | (i + 1);
         urbs[i].buffer = malloc(urbs[i].buffer_length);
@@ -302,11 +307,11 @@ void* os_inputmain(void* context){
             if (errno == ENODEV || errno == ENOENT || errno == ESHUTDOWN)
                 // Stop the thread if the handle closes
                 break;
-            else if(errno == EPIPE && urb){
+            else if (errno == EPIPE && urb) {
                 /// If just an EPIPE ocurred, give the device a CLEAR_HALT and resubmit the URB.
                 ioctl(fd, USBDEVFS_CLEAR_HALT, &urb->endpoint);
                 // Re-submit the URB
-                if(urb)
+                if (urb)
                     ioctl(fd, USBDEVFS_SUBMITURB, urb);
                 urb = 0;
             }
@@ -330,8 +335,8 @@ void* os_inputmain(void* context){
             /// non RGB Keyboard | !IS_RGB && !IS_MOUSE | nA | nA | hid_kb_translate()
             ///
             pthread_mutex_lock(imutex(kb));
-            if(IS_MOUSE(vendor, product)){
-                switch(urb->actual_length){
+            if (IS_MOUSE(vendor, product)) {
+                switch (urb->actual_length) {
                 case 8:
                 case 10:
                 case 11:
@@ -343,8 +348,8 @@ void* os_inputmain(void* context){
                     corsair_mousecopy(kb->input.keys, -(urb->endpoint & 0xF), urb->buffer);
                     break;
                 }
-            } else if(IS_RGB(vendor, product)){
-                switch(urb->actual_length){
+            } else if (IS_RGB(vendor, product)) {
+                switch (urb->actual_length) {
                 case 8:
                     // RGB EP 1: 6KRO (BIOS mode) input
                     hid_kb_translate(kb->input.keys, -1, urb->actual_length, urb->buffer);
@@ -352,7 +357,7 @@ void* os_inputmain(void* context){
                 case 21:
                 case 5:
                     // RGB EP 2: NKRO (non-BIOS) input. Accept only if keyboard is inactive
-                    if(!kb->active)
+                    if (!kb->active)
                         hid_kb_translate(kb->input.keys, -2, urb->actual_length, urb->buffer);
                     break;
                 case MSG_SIZE:
@@ -379,7 +384,7 @@ void* os_inputmain(void* context){
     /// If the endless loop is terminated, clean up by discarding the URBs via ioctl(USBDEVFS_DISCARDURB),
     /// free the URB buffers and return a null pointer as thread exit code.
     ckb_info("Stopping input thread for %s%d\n", devpath, index);
-    for(int i = 0; i < urbcount; i++){
+    for (int i = 0; i < urbcount; i++) {
         ioctl(fd, USBDEVFS_DISCARDURB, urbs + i);
         free(urbs[i].buffer);
     }
@@ -403,7 +408,8 @@ void* os_inputmain(void* context){
 /// There is no error handling yet.
 /// Function is called  in usb_linux.c only, so it is declared as static now.
 ///
-static int usbunclaim(usbdevice* kb, int resetting) {
+static int usbunclaim(usbdevice* kb, int resetting)
+{
     int handle = kb->handle - 1;
     int count = kb->epcount;
     for (int i = 0; i < count; i++) {
@@ -417,7 +423,7 @@ static int usbunclaim(usbdevice* kb, int resetting) {
         ctl.ifno = 1;
         ioctl(handle, USBDEVFS_IOCTL, &ctl);
         // Also reconnect iface #2 (HID) for non-RGB keyboards
-        if(!HAS_FEATURES(kb, FEAT_RGB)){
+        if (!HAS_FEATURES(kb, FEAT_RGB)) {
             ctl.ifno = 2;
             ioctl(handle, USBDEVFS_IOCTL, &ctl);
         }
@@ -432,12 +438,13 @@ static int usbunclaim(usbdevice* kb, int resetting) {
 /// \n The device in unrefenced via library function udev_device_unref().
 /// \n handle, udev and the first char of kbsyspath are cleared to 0 (empty string for kbsyspath).
 ///
-void os_closeusb(usbdevice* kb){
-    if(kb->handle){
+void os_closeusb(usbdevice* kb)
+{
+    if (kb->handle) {
         usbunclaim(kb, 0);
         close(kb->handle - 1);
     }
-    if(kb->udev)
+    if (kb->udev)
         udev_device_unref(kb->udev);
     kb->handle = 0;
     kb->udev = 0;
@@ -456,16 +463,17 @@ void os_closeusb(usbdevice* kb){
 /// Error handling is done for the ioctl(USBDEVFS_CLAIMINTERFACE) only. If this fails, now an error message is thrown and -1 is returned.
 /// Function is called  in usb_linux.c only, so it is declared as static now.
 ///
-static int usbclaim(usbdevice* kb){
+static int usbclaim(usbdevice* kb)
+{
     int count = kb->epcount;
 #ifdef DEBUG
     ckb_info("claiming %d endpoints\n", count);
 #endif // DEBUG
 
-    for(int i = 0; i < count; i++){
+    for (int i = 0; i < count; i++) {
         struct usbdevfs_ioctl ctl = { i, USBDEVFS_DISCONNECT, 0 };
         ioctl(kb->handle - 1, USBDEVFS_IOCTL, &ctl);
-        if(ioctl(kb->handle - 1, USBDEVFS_CLAIMINTERFACE, &i)) {
+        if (ioctl(kb->handle - 1, USBDEVFS_CLAIMINTERFACE, &i)) {
             ckb_err("Failed to claim interface %d: %s\n", i, strerror(errno));
             return -1;
         }
@@ -476,12 +484,12 @@ static int usbclaim(usbdevice* kb){
 ///
 /// \brief TEST_RESET doesa "try / catch" for resetting the usb interface
 ///
-#define TEST_RESET(op)                                                      \
-    if(op){                                                                 \
-        ckb_err_fn("resetusb failed: %s\n", file, line, strerror(errno));   \
-        if(errno == EINTR || errno == EAGAIN)                               \
-            return -1;              /* try again if status code says so */  \
-        return -2;                  /* else, remove device */               \
+#define TEST_RESET(op)                                                    \
+    if (op) {                                                             \
+        ckb_err_fn("resetusb failed: %s\n", file, line, strerror(errno)); \
+        if (errno == EINTR || errno == EAGAIN)                            \
+            return -1; /* try again if status code says so */             \
+        return -2; /* else, remove device */                              \
     }
 
 /// \brief .
@@ -494,7 +502,8 @@ static int usbclaim(usbdevice* kb){
 ///
 /// \todo it seems that no one wants to try the reset again. But I'v seen it somewhere...
 ///
-int os_resetusb(usbdevice* kb, const char* file, int line) {
+int os_resetusb(usbdevice* kb, const char* file, int line)
+{
     TEST_RESET(usbunclaim(kb, 1));
     TEST_RESET(ioctl(kb->handle - 1, USBDEVFS_RESET));
     TEST_RESET(usbclaim(kb));
@@ -507,21 +516,22 @@ int os_resetusb(usbdevice* kb, const char* file, int line) {
 /// \brief strtrim trims a string by removing leading and trailing spaces.
 /// \param string
 ///
-void strtrim(char* string){
+void strtrim(char* string)
+{
     // Find last non-space
     char* last = string;
-    for(char* c = string; *c != 0; c++){
-        if(!isspace(*c))
+    for (char* c = string; *c != 0; c++) {
+        if (!isspace(*c))
             last = c;
     }
     last[1] = 0;
     // Find first non-space
     char* first = string;
-    for(; *first != 0; first++){
-        if(!isspace(*first))
+    for (; *first != 0; first++) {
+        if (!isspace(*first))
             break;
     }
-    if(first != string)
+    if (first != string)
         memmove(string, first, last - first);
 }
 
@@ -532,22 +542,23 @@ void strtrim(char* string){
 /// and all endpoints should be claimed with usbclaim().
 /// Claiming is the only point where os_setupusb() can produce an error (-1).
 ///
-int os_setupusb(usbdevice* kb) {
+int os_setupusb(usbdevice* kb)
+{
     ///
     /// - Copy device description and serial
     struct udev_device* dev = kb->udev;
     const char* name = udev_device_get_sysattr_value(dev, "product");
-    if(name)
+    if (name)
         strncpy(kb->name, name, KB_NAME_LEN);
     strtrim(kb->name);
     const char* serial = udev_device_get_sysattr_value(dev, "serial");
-    if(serial)
+    if (serial)
         strncpy(kb->serial, serial, SERIAL_LEN);
     strtrim(kb->serial);
     ///
     /// - Copy firmware version (needed to determine USB protocol)
     const char* firmware = udev_device_get_sysattr_value(dev, "bcdDevice");
-    if(firmware)
+    if (firmware)
         sscanf(firmware, "%hx", &kb->fwversion);
     else
         kb->fwversion = 0;
@@ -566,9 +577,9 @@ int os_setupusb(usbdevice* kb) {
     ckb_info("claiming interfaces. name=%s, firmware=%s; Got >>%s<< as ep_str\n", name, firmware, ep_str);
 #endif //DEBUG
     kb->epcount = 0;
-    if(ep_str)
+    if (ep_str)
         sscanf(ep_str, "%d", &kb->epcount);
-    if(kb->epcount < 2){
+    if (kb->epcount < 2) {
         // IF we have an RGB KB with 0 or 1 endpoints, it will be in BIOS mode.
         ckb_err("Unable to read endpoint count from udev, assuming %d and reading >>%s<< or device is in BIOS mode\n", kb->epcount, ep_str);
         if (usb_tryreset(kb) == 0) { ///< Try to reset the device and recall the function
@@ -583,17 +594,18 @@ int os_setupusb(usbdevice* kb) {
         // kb->epcount = (HAS_FEATURES(kb, FEAT_RGB) ? 4 : 3);
         // ckb_warn("Unable to read endpoint count from udev, assuming %d and reading >>%s<<...\n", kb->epcount, ep_str);
     }
-    if(usbclaim(kb)){
+    if (usbclaim(kb)) {
         ckb_err("Failed to claim interfaces: %s\n", strerror(errno));
         return -1;
     }
     return 0;
 }
 
-int usbadd(struct udev_device* dev, short vendor, short product) {
+int usbadd(struct udev_device* dev, short vendor, short product)
+{
     const char* path = udev_device_get_devnode(dev);
     const char* syspath = udev_device_get_syspath(dev);
-    if(!path || !syspath || path[0] == 0 || syspath[0] == 0){
+    if (!path || !syspath || path[0] == 0 || syspath[0] == 0) {
         ckb_err("Failed to get device path\n");
         return -1;
     }
@@ -601,20 +613,20 @@ int usbadd(struct udev_device* dev, short vendor, short product) {
     ckb_info(">>>vendor = 0x%x, product = 0x%x, path = %s, syspath = %s\n", vendor, product, path, syspath);
 #endif // DEDBUG
     // Find a free USB slot
-    for(int index = 1; index < DEV_MAX; index++){
+    for (int index = 1; index < DEV_MAX; index++) {
         usbdevice* kb = keyboard + index;
-        if(pthread_mutex_trylock(dmutex(kb))){
+        if (pthread_mutex_trylock(dmutex(kb))) {
             // If the mutex is locked then the device is obviously in use, so keep going
-            if(!strcmp(syspath, kbsyspath[index])){
+            if (!strcmp(syspath, kbsyspath[index])) {
                 // Make sure this existing keyboard doesn't have the same syspath (this shouldn't happen)
                 return 0;
             }
             continue;
         }
-        if(!IS_CONNECTED(kb)){
+        if (!IS_CONNECTED(kb)) {
             // Open the sysfs device
             kb->handle = open(path, O_RDWR) + 1;
-            if(kb->handle <= 0){
+            if (kb->handle <= 0) {
                 ckb_err("Failed to open USB device: %s\n", strerror(errno));
                 kb->handle = 0;
                 pthread_mutex_unlock(dmutex(kb));
@@ -636,7 +648,7 @@ int usbadd(struct udev_device* dev, short vendor, short product) {
     return -1;
 }
 
-static struct udev* udev;   ///< struct udef is defined in /usr/include/libudev.h
+static struct udev* udev; ///< struct udef is defined in /usr/include/libudev.h
 
 /// \todo These two thread vasriables seem to be unused: usbtread, udevthread
 pthread_t usbthread, udevthread;
@@ -692,13 +704,14 @@ static _model models[] = {
 /// \n If we can find the model name in the model array,
 /// call usbadd() with the model number.
 /// \todo So why the hell not a transformation between the string and the short presentation? Lets check if the string representation is used elsewhere.
-static int usb_add_device(struct udev_device* dev){
+static int usb_add_device(struct udev_device* dev)
+{
     const char* vendor = udev_device_get_sysattr_value(dev, "idVendor");
-    if(vendor && !strcmp(vendor, V_CORSAIR_STR)){
+    if (vendor && !strcmp(vendor, V_CORSAIR_STR)) {
         const char* product = udev_device_get_sysattr_value(dev, "idProduct");
-        if(product){
-            for(_model* model = models; model < models + N_MODELS; model++){
-                if(!strcmp(product, model->name)){
+        if (product) {
+            for (_model* model = models; model < models + N_MODELS; model++) {
+                if (!strcmp(product, model->name)) {
                     return usbadd(dev, V_CORSAIR, model->number);
                 }
             }
@@ -717,14 +730,15 @@ static int usb_add_device(struct udev_device* dev){
 /// \n Searching for the correct name in kbsyspath-array and closing the usb via closeusb()
 /// are protected by lock..unlock of the corresponding devmutex arraymember.
 ///
-static void usb_rm_device(struct udev_device* dev){
+static void usb_rm_device(struct udev_device* dev)
+{
     // Device removed. Look for it in our list of keyboards
     const char* syspath = udev_device_get_syspath(dev);
-    if(!syspath || syspath[0] == 0)
+    if (!syspath || syspath[0] == 0)
         return;
-    for(int i = 1; i < DEV_MAX; i++){
+    for (int i = 1; i < DEV_MAX; i++) {
         pthread_mutex_lock(devmutex + i);
-        if(!strcmp(syspath, kbsyspath[i]))
+        if (!strcmp(syspath, kbsyspath[i]))
             closeusb(keyboard + i);
         pthread_mutex_unlock(devmutex + i);
     }
@@ -744,23 +758,25 @@ static void usb_rm_device(struct udev_device* dev){
 ///
 /// If the latter does not work, the new device is released again (udev_device_unref ()).
 /// \n After the last iteration, the enumerator is released with udev_enumerate_unref ().
-static void udev_enum(){
+static void udev_enum()
+{
     struct udev_enumerate* enumerator = udev_enumerate_new(udev);
     udev_enumerate_add_match_subsystem(enumerator, "usb");
     udev_enumerate_add_match_sysattr(enumerator, "idVendor", V_CORSAIR_STR);
     udev_enumerate_scan_devices(enumerator);
-    struct udev_list_entry* devices, *dev_list_entry;
+    struct udev_list_entry *devices, *dev_list_entry;
     devices = udev_enumerate_get_list_entry(enumerator);
 
-    udev_list_entry_foreach(dev_list_entry, devices){
+    udev_list_entry_foreach(dev_list_entry, devices)
+    {
         const char* path = udev_list_entry_get_name(dev_list_entry);
-        if(!path)
+        if (!path)
             continue;
         struct udev_device* dev = udev_device_new_from_syspath(udev, path);
-        if(!dev)
+        if (!dev)
             continue;
         // If the device matches a recognized device ID, open it
-        if(usb_add_device(dev))
+        if (usb_add_device(dev))
             // Release device if not
             udev_device_unref(dev);
     }
@@ -772,19 +788,20 @@ static void udev_enum(){
 /// \brief usbmain is called by main() after setting up all other stuff.
 /// \return 0 normally or -1 if fatal error occurs (up to now only if no new devices are available)
 ///
-int usbmain(){
+int usbmain()
+{
     /// First check whether the uinput module is loaded by the kernel.
     /// \todo Why isn't missing of uinput
     /// a fatal error?
     ///
     // Load the uinput module (if it's not loaded already)
-    if(system("modprobe uinput") != 0)
+    if (system("modprobe uinput") != 0)
         ckb_warn("Failed to load uinput module\n");
 
     ///
     /// Create the udev object with udev_new() (is a function from libudev.h)
     /// terminate -1 if error
-    if(!(udev = udev_new())) {
+    if (!(udev = udev_new())) {
         ckb_fatal("Failed to initialize udev in usbmain(), usb_linux.c\n");
         return -1;
     }
@@ -802,28 +819,28 @@ int usbmain(){
     // Get an fd for the monitor
     int fd = udev_monitor_get_fd(monitor);
     fd_set fds;
-    while(udev){
+    while (udev) {
         FD_ZERO(&fds);
         FD_SET(fd, &fds);
         // Block until an event is read
-        if(select(fd + 1, &fds, 0, 0, 0) > 0 && FD_ISSET(fd, &fds)){
+        if (select(fd + 1, &fds, 0, 0, 0) > 0 && FD_ISSET(fd, &fds)) {
             struct udev_device* dev = udev_monitor_receive_device(monitor);
-            if(!dev)
+            if (!dev)
                 continue;
             const char* action = udev_device_get_action(dev);
-            if(!action){
+            if (!action) {
                 udev_device_unref(dev);
                 continue;
             }
             // Add/remove device
-            if(!strcmp(action, "add")){
+            if (!strcmp(action, "add")) {
                 int res = usb_add_device(dev);
-                if(res == 0)
+                if (res == 0)
                     continue;
                 // If the device matched but the handle wasn't opened correctly, re-enumerate (this sometimes solves the problem)
-                if(res == -1)
+                if (res == -1)
                     udev_enum();
-            } else if(!strcmp(action, "remove"))
+            } else if (!strcmp(action, "remove"))
                 usb_rm_device(dev);
             udev_device_unref(dev);
         }
@@ -832,7 +849,8 @@ int usbmain(){
     return 0;
 }
 
-void usbkill(){
+void usbkill()
+{
     udev_unref(udev);
     udev = 0;
 }

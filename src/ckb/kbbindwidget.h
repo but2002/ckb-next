@@ -1,20 +1,19 @@
 #ifndef KBBINDWIDGET_H
 #define KBBINDWIDGET_H
 
-#include <QWidget>
 #include "kbbind.h"
 #include "kbprofile.h"
+#include <QWidget>
 
 namespace Ui {
 class KbBindWidget;
 }
 
-class KbBindWidget : public QWidget
-{
+class KbBindWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit KbBindWidget(QWidget *parent = 0);
+    explicit KbBindWidget(QWidget* parent = 0);
     ~KbBindWidget();
 
     void setBind(KbBind* newBind, KbProfile* newProfile);
@@ -29,10 +28,10 @@ private slots:
     void on_copyButton_clicked();
 
 private:
-    Ui::KbBindWidget *ui;
+    Ui::KbBindWidget* ui;
 
-    KbBind*     bind;
-    KbProfile*  profile;
+    KbBind* bind;
+    KbProfile* profile;
     QStringList currentSelection;
 };
 

@@ -1,19 +1,18 @@
 #ifndef SETTINGSWIDGET_H
 #define SETTINGSWIDGET_H
 
-#include <QWidget>
 #include "extrasettingswidget.h"
+#include <QWidget>
 
 namespace Ui {
 class SettingsWidget;
 }
 
-class SettingsWidget : public QWidget
-{
+class SettingsWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit SettingsWidget(QWidget *parent = 0);
+    explicit SettingsWidget(QWidget* parent = 0);
     ~SettingsWidget();
 
     // Set text labels
@@ -40,7 +39,7 @@ private slots:
     void on_extraButton_clicked();
 
 private:
-    Ui::SettingsWidget *ui;
+    Ui::SettingsWidget* ui;
     friend class MainWindow;
 
     ExtraSettingsWidget* extra;

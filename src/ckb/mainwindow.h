@@ -1,20 +1,20 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "kbwidget.h"
+#include "settingswidget.h"
 #include <QCloseEvent>
 #include <QMainWindow>
 #include <QMenu>
 #include <QSystemTrayIcon>
 #include <QTimer>
-#include "kbwidget.h"
-#include "settingswidget.h"
 
 #ifdef USE_LIBAPPINDICATOR
 #define signals_BACKUP signals
 #undef signals
 extern "C" {
-  #include <libappindicator/app-indicator.h>
-  #include <gtk/gtk.h>
+#include <gtk/gtk.h>
+#include <libappindicator/app-indicator.h>
 }
 #define signals signals_BACKUP
 #undef signals_BACKUP
@@ -24,12 +24,11 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
 
     static MainWindow* mainWindow;
@@ -44,16 +43,16 @@ private:
     QAction* closeAction;
 
 #ifdef USE_LIBAPPINDICATOR
-    bool                unityDesktop;
-    AppIndicator*       indicator;
-    GtkWidget*          indicatorMenu;
-    GtkWidget*          indicatorMenuQuitItem;
-    GtkWidget*          indicatorMenuRestoreItem;
+    bool unityDesktop;
+    AppIndicator* indicator;
+    GtkWidget* indicatorMenu;
+    GtkWidget* indicatorMenuQuitItem;
+    GtkWidget* indicatorMenuRestoreItem;
 #endif // USE_LIBAPPINDICATOR
-    QMenu*              trayIconMenu;
-    QSystemTrayIcon*    trayIcon;
+    QMenu* trayIconMenu;
+    QSystemTrayIcon* trayIcon;
 
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent* event);
 
 public slots:
     void showWindow();
@@ -72,7 +71,7 @@ private slots:
     void showFwUpdateNotification(QWidget* widget, float version);
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
 };
 
 #endif // MAINWINDOW_H

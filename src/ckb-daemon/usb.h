@@ -35,67 +35,67 @@
 /// \n In the same way, all other corresponding files have to be supplemented or modified:
 /// Currently known for this are \b usb_linux.c and \b usb_mac.c
 ///
-#define V_CORSAIR       0x1b1c
-#define V_CORSAIR_STR   "1b1c"
+#define V_CORSAIR 0x1b1c
+#define V_CORSAIR_STR "1b1c"
 
-#define P_K65           0x1b17
-#define P_K65_STR       "1b17"
-#define P_K65_NRGB      0x1b07
-#define P_K65_NRGB_STR  "1b07"
-#define P_K65_LUX       0x1b37
-#define P_K65_LUX_STR   "1b37"
-#define P_K65_RFIRE     0x1b39
+#define P_K65 0x1b17
+#define P_K65_STR "1b17"
+#define P_K65_NRGB 0x1b07
+#define P_K65_NRGB_STR "1b07"
+#define P_K65_LUX 0x1b37
+#define P_K65_LUX_STR "1b37"
+#define P_K65_RFIRE 0x1b39
 #define P_K65_RFIRE_STR "1b39"
-#define IS_K65(kb)      ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K65 || (kb)->product == P_K65_NRGB || (kb)->product == P_K65_LUX || (kb)->product == P_K65_RFIRE))
+#define IS_K65(kb) ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K65 || (kb)->product == P_K65_NRGB || (kb)->product == P_K65_LUX || (kb)->product == P_K65_RFIRE))
 
-#define P_K70                0x1b13
-#define P_K70_STR            "1b13"
-#define P_K70_NRGB           0x1b09
-#define P_K70_NRGB_STR       "1b09"
-#define P_K70_LUX            0x1b33
-#define P_K70_LUX_STR        "1b33"
-#define P_K70_LUX_NRGB	     0x1b36
-#define P_K70_LUX_NRGB_STR   "1b36"
-#define P_K70_RFIRE          0x1b38
-#define P_K70_RFIRE_STR      "1b38"
-#define P_K70_RFIRE_NRGB     0x1b3a
+#define P_K70 0x1b13
+#define P_K70_STR "1b13"
+#define P_K70_NRGB 0x1b09
+#define P_K70_NRGB_STR "1b09"
+#define P_K70_LUX 0x1b33
+#define P_K70_LUX_STR "1b33"
+#define P_K70_LUX_NRGB 0x1b36
+#define P_K70_LUX_NRGB_STR "1b36"
+#define P_K70_RFIRE 0x1b38
+#define P_K70_RFIRE_STR "1b38"
+#define P_K70_RFIRE_NRGB 0x1b3a
 #define P_K70_RFIRE_NRGB_STR "1b3a"
-#define IS_K70(kb)           ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K70 || (kb)->product == P_K70_NRGB || (kb)->product == P_K70_RFIRE || (kb)->product == P_K70_RFIRE_NRGB || (kb)->product == P_K70_LUX || (kb)->product == P_K70_LUX_NRGB))
+#define IS_K70(kb) ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K70 || (kb)->product == P_K70_NRGB || (kb)->product == P_K70_RFIRE || (kb)->product == P_K70_RFIRE_NRGB || (kb)->product == P_K70_LUX || (kb)->product == P_K70_LUX_NRGB))
 
-#define P_K95           0x1b11
-#define P_K95_STR       "1b11"
-#define P_K95_NRGB      0x1b08
-#define P_K95_NRGB_STR  "1b08"
-#define P_K95_PLATINUM  0x1b2d
+#define P_K95 0x1b11
+#define P_K95_STR "1b11"
+#define P_K95_NRGB 0x1b08
+#define P_K95_NRGB_STR "1b08"
+#define P_K95_PLATINUM 0x1b2d
 #define P_K95_PLATINUM_STR "1b2d"
-#define IS_K95(kb)      ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K95 || (kb)->product == P_K95_NRGB || (kb)->product == P_K95_PLATINUM))
+#define IS_K95(kb) ((kb)->vendor == V_CORSAIR && ((kb)->product == P_K95 || (kb)->product == P_K95_NRGB || (kb)->product == P_K95_PLATINUM))
 
-#define P_STRAFE            0x1b20
-#define P_STRAFE_STR        "1b20"
-#define P_STRAFE_NRGB       0x1b15
-#define P_STRAFE_NRGB_STR   "1b15"
-#define IS_STRAFE(kb)       ((kb)->vendor == V_CORSAIR && ((kb)->product == P_STRAFE || (kb)->product == P_STRAFE_NRGB))
+#define P_STRAFE 0x1b20
+#define P_STRAFE_STR "1b20"
+#define P_STRAFE_NRGB 0x1b15
+#define P_STRAFE_NRGB_STR "1b15"
+#define IS_STRAFE(kb) ((kb)->vendor == V_CORSAIR && ((kb)->product == P_STRAFE || (kb)->product == P_STRAFE_NRGB))
 
-#define P_M65           0x1b12
-#define P_M65_STR       "1b12"
-#define P_M65_PRO       0x1b2e
-#define P_M65_PRO_STR   "1b2e"
-#define IS_M65(kb)      ((kb)->vendor == V_CORSAIR && ((kb)->product == P_M65 || (kb)->product == P_M65_PRO))
+#define P_M65 0x1b12
+#define P_M65_STR "1b12"
+#define P_M65_PRO 0x1b2e
+#define P_M65_PRO_STR "1b2e"
+#define IS_M65(kb) ((kb)->vendor == V_CORSAIR && ((kb)->product == P_M65 || (kb)->product == P_M65_PRO))
 
-#define P_SABRE_O       0x1b14  /* optical */
-#define P_SABRE_O_STR   "1b14"
-#define P_SABRE_L       0x1b19  /* laser */
-#define P_SABRE_L_STR   "1b19"
-#define P_SABRE_N       0x1b2f  /* new? */
-#define P_SABRE_N_STR   "1b2f"
-#define P_SABRE_O2      0x1b32 /* Observed on a CH-9000111-EU model SABRE */
-#define P_SABRE_O2_STR  "1b32"
-#define IS_SABRE(kb)    ((kb)->vendor == V_CORSAIR && ((kb)->product == P_SABRE_O || (kb)->product == P_SABRE_L || (kb)->product == P_SABRE_N || (kb)->product == P_SABRE_O2))
+#define P_SABRE_O 0x1b14 /* optical */
+#define P_SABRE_O_STR "1b14"
+#define P_SABRE_L 0x1b19 /* laser */
+#define P_SABRE_L_STR "1b19"
+#define P_SABRE_N 0x1b2f /* new? */
+#define P_SABRE_N_STR "1b2f"
+#define P_SABRE_O2 0x1b32 /* Observed on a CH-9000111-EU model SABRE */
+#define P_SABRE_O2_STR "1b32"
+#define IS_SABRE(kb) ((kb)->vendor == V_CORSAIR && ((kb)->product == P_SABRE_O || (kb)->product == P_SABRE_L || (kb)->product == P_SABRE_N || (kb)->product == P_SABRE_O2))
 
-#define P_SCIMITAR          0x1b1e
-#define P_SCIMITAR_STR      "1b1e"
-#define P_SCIMITAR_PRO      0x1b3e
-#define P_SCIMITAR_PRO_STR  "1b3e"
+#define P_SCIMITAR 0x1b1e
+#define P_SCIMITAR_STR "1b1e"
+#define P_SCIMITAR_PRO 0x1b3e
+#define P_SCIMITAR_PRO_STR "1b3e"
 #define IS_SCIMITAR(kb) ((kb)->vendor == V_CORSAIR && ((kb)->product == P_SCIMITAR || (kb)->product == P_SCIMITAR_PRO))
 
 ///
@@ -121,48 +121,47 @@ const char* product_str(short product);
 /// RGB vs non-RGB test
 /// (note: non-RGB Strafe is still considered "RGB" in that it shares the same protocol.
 /// The difference is denoted with the "monochrome" feature).
-#define IS_RGB(vendor, product)         ((vendor) == (V_CORSAIR) && (product) != (P_K65_NRGB) && (product) != (P_K70_NRGB) && (product) != (P_K95_NRGB))
+#define IS_RGB(vendor, product) ((vendor) == (V_CORSAIR) && (product) != (P_K65_NRGB) && (product) != (P_K70_NRGB) && (product) != (P_K95_NRGB))
 
 /// The difference between non RGB and monochrome is, that monochrome has lights, but just in one color.
 /// nonRGB has no lights.
 /// Change this if new \b monochrome devices are added
-#define IS_MONOCHROME(vendor, product)  ((vendor) == (V_CORSAIR) && (product) == (P_STRAFE_NRGB))
+#define IS_MONOCHROME(vendor, product) ((vendor) == (V_CORSAIR) && (product) == (P_STRAFE_NRGB))
 
 /// For calling with a usbdevice*, vendor and product are extracted and IS_RGB() is returned.
-#define IS_RGB_DEV(kb)                  IS_RGB((kb)->vendor, (kb)->product)
+#define IS_RGB_DEV(kb) IS_RGB((kb)->vendor, (kb)->product)
 
 /// For calling with a usbdevice*, vendor and product are extracted and IS_MONOCHROME() is returned.
-#define IS_MONOCHROME_DEV(kb)           IS_MONOCHROME((kb)->vendor, (kb)->product)
+#define IS_MONOCHROME_DEV(kb) IS_MONOCHROME((kb)->vendor, (kb)->product)
 
 /// Full color range (16.8M) vs partial color range (512)
-#define IS_FULLRANGE(kb)                (IS_RGB((kb)->vendor, (kb)->product) && (kb)->product != P_K65 && (kb)->product != P_K70 && (kb)->product != P_K95)
+#define IS_FULLRANGE(kb) (IS_RGB((kb)->vendor, (kb)->product) && (kb)->product != P_K65 && (kb)->product != P_K70 && (kb)->product != P_K95)
 
 /// Mouse vs keyboard test
-#define IS_MOUSE(vendor, product)       ((vendor) == (V_CORSAIR) && ((product) == (P_M65) || (product) == (P_M65_PRO) || (product) == (P_SABRE_O) || (product) == (P_SABRE_L) || (product) == (P_SABRE_N) || (product) == (P_SCIMITAR) || (product) == (P_SCIMITAR_PRO) || (product) == (P_SABRE_O2)))
+#define IS_MOUSE(vendor, product) ((vendor) == (V_CORSAIR) && ((product) == (P_M65) || (product) == (P_M65_PRO) || (product) == (P_SABRE_O) || (product) == (P_SABRE_L) || (product) == (P_SABRE_N) || (product) == (P_SCIMITAR) || (product) == (P_SCIMITAR_PRO) || (product) == (P_SABRE_O2)))
 
 /// For calling with a usbdevice*, vendor and product are extracted and IS_MOUSE() is returned.
-#define IS_MOUSE_DEV(kb)                IS_MOUSE((kb)->vendor, (kb)->product)
-
+#define IS_MOUSE_DEV(kb) IS_MOUSE((kb)->vendor, (kb)->product)
 
 /// USB delays for when the keyboards get picky about timing
 /// That was the original comment, but it is used anytime.
 
 /// The short delay is used before any send or receive
-#define DELAY_SHORT(kb)      \
-        clock_nanosleep(CLOCK_MONOTONIC, 0, &(struct timespec) {.tv_nsec = ((int) (kb->usbdelay)) * 1000000}, NULL)  // base (default: 5ms)
+#define DELAY_SHORT(kb) \
+    clock_nanosleep(CLOCK_MONOTONIC, 0, &(struct timespec){.tv_nsec = ((int)(kb->usbdelay)) * 1000000 }, NULL) // base (default: 5ms)
 
 /// the medium delay is used after sending a command before waiting for the answer.
-#define DELAY_MEDIUM(kb)     \
-        clock_nanosleep(CLOCK_MONOTONIC, 0, &(struct timespec) {.tv_nsec = ((int) (kb->usbdelay)) * 10000000}, NULL)  // x10 (default: 50ms)
+#define DELAY_MEDIUM(kb) \
+    clock_nanosleep(CLOCK_MONOTONIC, 0, &(struct timespec){.tv_nsec = ((int)(kb->usbdelay)) * 10000000 }, NULL) // x10 (default: 50ms)
 
 /// The longest delay takes place where something went wrong (eg when resetting the device)
-#define DELAY_LONG(kb)       \
-        clock_nanosleep(CLOCK_MONOTONIC, 0, &(struct timespec) {.tv_nsec = 100000000}, NULL)  // long, fixed 100ms
+#define DELAY_LONG(kb) \
+    clock_nanosleep(CLOCK_MONOTONIC, 0, &(struct timespec){.tv_nsec = 100000000 }, NULL) // long, fixed 100ms
 
 /// This constant is used to initialize \b kb->usbdelay.
 /// It is used in many places (see macros above) but often also overwritten to the fixed value of 10.
 /// Pure Hacker code.
-#define USB_DELAY_DEFAULT   5
+#define USB_DELAY_DEFAULT 5
 
 /// Start the USB main loop. Returns program exit code when finished
 int usbmain();
@@ -298,24 +297,24 @@ int _nk95cmd(usbdevice* kb, uchar bRequest, ushort wValue, const char* file, int
 /// the command structure is different:
 /// \n Just the bits 23..16 are used as bits 7..0 for bRequest
 /// \n Bits 15..0 are used as wValue
-#define nk95cmd(kb, command) _nk95cmd(kb, (command) >> 16 & 0xFF, (command) & 0xFFFF, __FILE_NOPATH__, __LINE__)
+#define nk95cmd(kb, command) _nk95cmd(kb, (command) >> 16 & 0xFF, (command)&0xFFFF, __FILE_NOPATH__, __LINE__)
 
 /// Hardware-specific commands for the K95 nonRGB,
 /// \see [usb2.0 documentation for details](http://www.usb.org/developers/docs/usb_20.zip).
 /// Set Hardware playback off
-#define NK95_HWOFF  0x020030
+#define NK95_HWOFF 0x020030
 
 /// Hardware playback on
-#define NK95_HWON   0x020001
+#define NK95_HWON 0x020001
 
 /// Switch to mode 1
-#define NK95_M1     0x140001
+#define NK95_M1 0x140001
 
 /// Switch to mode 2
-#define NK95_M2     0x140002
+#define NK95_M2 0x140002
 
 /// Switch to mode 3
-#define NK95_M3     0x140003
+#define NK95_M3 0x140003
 
 ///
 /// \brief usb_tryreset does what the name means: Try to reset the usb via resetusb()
@@ -324,4 +323,4 @@ int _nk95cmd(usbdevice* kb, uchar bRequest, ushort wValue, const char* file, int
 /// \return 0 on success, -1 otherwise
 int usb_tryreset(usbdevice* kb);
 
-#endif  // USB_H
+#endif // USB_H

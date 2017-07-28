@@ -5,8 +5,7 @@
 
 // Class for running ckb at login
 
-class AutoRun
-{
+class AutoRun {
 public:
     // Whether or not run at login is possible
     static bool available();

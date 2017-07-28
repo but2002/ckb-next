@@ -2,10 +2,10 @@
 #define MACROREADER_H
 
 //#include <QStandardPaths>
-#include <QObject>
 #include <QFile>
-#include <QThread>
+#include <QObject>
 #include <QPlainTextEdit>
+#include <QThread>
 
 //////////
 /// \brief The MacroReaderThread class is responsible for reading Macro Key Values.
@@ -19,8 +19,7 @@
 /// the worker thread closes the channelFile and leaves.
 /// \sa MacroReaderThread(), ~MacroReaderThread(), readMaco(), run()
 ///
-class MacroReaderThread : public QThread
-{
+class MacroReaderThread : public QThread {
     Q_OBJECT
 
     //////////
@@ -52,7 +51,8 @@ public:
     /// \param macBox
     /// \param macText
     ///
-    MacroReaderThread(int macNum, QString macPath, QPlainTextEdit* macBox, QPlainTextEdit* macText) {
+    MacroReaderThread(int macNum, QString macPath, QPlainTextEdit* macBox, QPlainTextEdit* macText)
+    {
         macroNumber = macNum;
         macroPath = macPath;
         macroBox = macBox;
@@ -61,7 +61,7 @@ public:
 
     //////////
     /// \brief run is the notification reader main loop.
-    void run () Q_DECL_OVERRIDE;
+    void run() Q_DECL_OVERRIDE;
 
 private slots:
     //////////
@@ -84,8 +84,7 @@ private slots:
 /// \brief The MacroReader class creates a worker thread object.
 /// It does a connect do delayed deletion of thread local variables in the case the worker thread terminates.
 ///
-class MacroReader : public QThread
-{
+class MacroReader : public QThread {
     Q_OBJECT
 
 public:

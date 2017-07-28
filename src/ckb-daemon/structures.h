@@ -12,23 +12,29 @@ typedef struct {
 
 // Used to manipulate key bitfields
 // The do-while business is a hack to make statements like "if(a) SET_KEYBIT(...); else CLEAR_KEYBIT(...);" work
-#define SET_KEYBIT(array, index) do { (array)[(index) / 8] |= 1 << ((index) % 8); } while(0)
-#define CLEAR_KEYBIT(array, index) do { (array)[(index) / 8] &= ~(1 << ((index) % 8)); } while(0)
+#define SET_KEYBIT(array, index)                    \
+    do {                                            \
+        (array)[(index) / 8] |= 1 << ((index) % 8); \
+    } while (0)
+#define CLEAR_KEYBIT(array, index)                     \
+    do {                                               \
+        (array)[(index) / 8] &= ~(1 << ((index) % 8)); \
+    } while (0)
 
 // Indicator LEDs
-#define I_NUM       1
-#define I_CAPS      2
-#define I_SCROLL    4
+#define I_NUM 1
+#define I_CAPS 2
+#define I_SCROLL 4
 
 // Maximum number of notification nodes
 #define OUTFIFO_MAX 10
 
 // Action triggered when activating a macro
 typedef struct {
-    short scan;         // Key scancode, OR
+    short scan; // Key scancode, OR
     short rel_x, rel_y; // Mouse movement
-    char down;          // 0 for keyup, 1 for keydown (ignored if rel_x != 0 || rel_y != 0)
-    uint delay;         // us delay after action; UINT_MAX for use global delay
+    char down; // 0 for keyup, 1 for keydown (ignored if rel_x != 0 || rel_y != 0)
+    uint delay; // us delay after action; UINT_MAX for use global delay
 } macroaction;
 
 // Key macro
@@ -48,12 +54,12 @@ typedef struct {
     int macrocount;
     int macrocap;
 } binding;
-#define MACRO_MAX   1024
+#define MACRO_MAX 1024
 
 // DPI settings for mice
-#define DPI_COUNT   6
-#define LIFT_MIN    1
-#define LIFT_MAX    5
+#define DPI_COUNT 6
+#define LIFT_MIN 1
+#define LIFT_MAX 5
 typedef struct {
     // DPI levels
     ushort x[DPI_COUNT];
@@ -97,7 +103,7 @@ typedef struct {
 
 // Native profile structure
 #define PR_NAME_LEN 16
-#define MODE_COUNT  6
+#define MODE_COUNT 6
 typedef struct {
     // Modes
     usbmode mode[MODE_COUNT];
@@ -133,37 +139,37 @@ typedef struct {
 } usbinput;
 
 // Device features
-#define FEAT_RGB        0x001   // RGB backlighting?
-#define FEAT_MONOCHROME 0x002   // RGB protocol but single-color only?
-#define FEAT_POLLRATE   0x004   // Known poll rate?
-#define FEAT_ADJRATE    0x008   // Adjustable poll rate?
-#define FEAT_BIND       0x010   // Rebindable keys?
-#define FEAT_NOTIFY     0x020   // Key notifications?
-#define FEAT_FWVERSION  0x040   // Has firmware version?
-#define FEAT_FWUPDATE   0x080   // Has firmware update?
-#define FEAT_HWLOAD     0x100   // Hardware load enabled?
+#define FEAT_RGB 0x001 // RGB backlighting?
+#define FEAT_MONOCHROME 0x002 // RGB protocol but single-color only?
+#define FEAT_POLLRATE 0x004 // Known poll rate?
+#define FEAT_ADJRATE 0x008 // Adjustable poll rate?
+#define FEAT_BIND 0x010 // Rebindable keys?
+#define FEAT_NOTIFY 0x020 // Key notifications?
+#define FEAT_FWVERSION 0x040 // Has firmware version?
+#define FEAT_FWUPDATE 0x080 // Has firmware update?
+#define FEAT_HWLOAD 0x100 // Hardware load enabled?
 
-#define FEAT_ANSI       0x200   // ANSI/ISO layout toggle (Mac only - not needed on Linux)
-#define FEAT_ISO        0x400
-#define FEAT_MOUSEACCEL 0x800   // Mouse acceleration (also Mac only)
+#define FEAT_ANSI 0x200 // ANSI/ISO layout toggle (Mac only - not needed on Linux)
+#define FEAT_ISO 0x400
+#define FEAT_MOUSEACCEL 0x800 // Mouse acceleration (also Mac only)
 
 // Standard feature sets
-#define FEAT_COMMON     (FEAT_BIND | FEAT_NOTIFY | FEAT_FWVERSION | FEAT_MOUSEACCEL | FEAT_HWLOAD)
-#define FEAT_STD_RGB    (FEAT_COMMON | FEAT_RGB | FEAT_POLLRATE | FEAT_FWUPDATE)
-#define FEAT_STD_NRGB   (FEAT_COMMON)
-#define FEAT_LMASK      (FEAT_ANSI | FEAT_ISO)
+#define FEAT_COMMON (FEAT_BIND | FEAT_NOTIFY | FEAT_FWVERSION | FEAT_MOUSEACCEL | FEAT_HWLOAD)
+#define FEAT_STD_RGB (FEAT_COMMON | FEAT_RGB | FEAT_POLLRATE | FEAT_FWUPDATE)
+#define FEAT_STD_NRGB (FEAT_COMMON)
+#define FEAT_LMASK (FEAT_ANSI | FEAT_ISO)
 
 // Feature test (usbdevice* kb, int feat)
-#define HAS_FEATURES(kb, feat)      (((kb)->features & (feat)) == (feat))
-#define HAS_ANY_FEATURE(kb, feat)   (!!((kb)->features & (feat)))
+#define HAS_FEATURES(kb, feat) (((kb)->features & (feat)) == (feat))
+#define HAS_ANY_FEATURE(kb, feat) (!!((kb)->features & (feat)))
 
 // Bricked firmware?
 #define NEEDS_FW_UPDATE(kb) ((kb)->fwversion == 0 && HAS_FEATURES((kb), FEAT_FWUPDATE | FEAT_FWVERSION))
 
 // Lines per scroll (OSX only)
-#define SCROLL_ACCELERATED  0
-#define SCROLL_MIN          1
-#define SCROLL_MAX          10
+#define SCROLL_ACCELERATED 0
+#define SCROLL_MIN 1
+#define SCROLL_MAX 10
 
 // vtables for keyboards/mice (see command.h)
 extern const union devcmd vtable_keyboard;
@@ -172,15 +178,15 @@ extern const union devcmd vtable_mouse;
 
 // Structure for tracking keyboard/mouse devices
 #define KB_NAME_LEN 40
-#define SERIAL_LEN  34
-#define MSG_SIZE    64
-#define IFACE_MAX   4
+#define SERIAL_LEN 34
+#define MSG_SIZE 64
+#define IFACE_MAX 4
 typedef struct {
     // Function table (see command.h)
     const union devcmd* vtable;
-    // I/O devices
-    // Note that FDs have 1 added to them, because these are initialized to zero when the program starts but zero is technically a valid FD
-    // So the actual value is (fd - 1)
+// I/O devices
+// Note that FDs have 1 added to them, because these are initialized to zero when the program starts but zero is technically a valid FD
+// So the actual value is (fd - 1)
 #ifdef OS_LINUX
     // USB device
     struct udev_device* udev;
@@ -194,7 +200,7 @@ typedef struct {
     usb_dev_t handle;
     usb_iface_t ifusb[IFACE_MAX];
     hid_dev_t ifhid[IFACE_MAX];
-    io_object_t rm_notify[IFACE_MAX * 2 + 1];   // one for each: handle, ifusb, ifhid
+    io_object_t rm_notify[IFACE_MAX * 2 + 1]; // one for each: handle, ifusb, ifhid
     int epcount_hid, epcount_usb;
     // Result code from the last USB transfer
     kern_return_t lastresult;
@@ -230,7 +236,7 @@ typedef struct {
     // Whether the keyboard is being actively controlled by the driver
     char active;
     // Device name
-    char name[KB_NAME_LEN+1]; // increase by 1 for the trailing \0 for names that are exactly KB_NAME_LEN, e.g. "Corsair STRAFE RGB Gaming Keyboard"
+    char name[KB_NAME_LEN + 1]; // increase by 1 for the trailing \0 for names that are exactly KB_NAME_LEN, e.g. "Corsair STRAFE RGB Gaming Keyboard"
     // Device serial number
     char serial[SERIAL_LEN];
     // USB vendor and product IDs
@@ -251,4 +257,4 @@ typedef struct {
     uint delay;
 } usbdevice;
 
-#endif  // STRUCTURES_H
+#endif // STRUCTURES_H

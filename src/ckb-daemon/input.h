@@ -64,4 +64,4 @@ typedef struct ptlist {
     pthread_t thread_id;
 } ptlist_t;
 
-#endif  // INPUT_H
+#endif // INPUT_H

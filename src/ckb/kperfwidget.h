@@ -1,24 +1,23 @@
 #ifndef KPERFWIDGET_H
 #define KPERFWIDGET_H
 
-#include <QWidget>
+#include "colorbutton.h"
+#include "kbperf.h"
+#include "kbprofile.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSignalMapper>
-#include "kbperf.h"
-#include "kbprofile.h"
-#include "colorbutton.h"
+#include <QWidget>
 
 namespace Ui {
 class KPerfWidget;
 }
 
-class KPerfWidget : public QWidget
-{
+class KPerfWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit KPerfWidget(QWidget *parent = 0);
+    explicit KPerfWidget(QWidget* parent = 0);
     ~KPerfWidget();
 
     void setPerf(KbPerf* newPerf, KbProfile* newProfile);
@@ -29,7 +28,7 @@ public:
     typedef KbPerf::i_hw i_hw;
 
 private:
-    Ui::KPerfWidget *ui;
+    Ui::KPerfWidget* ui;
 
     KbPerf* perf;
     KbProfile* profile;
@@ -54,7 +53,7 @@ private:
     struct IndicatorUi {
         QCheckBox* enable;
         QComboBox* hwEnable;
-        ColorButton* color1, *color2, *color3;
+        ColorButton *color1, *color2, *color3;
     };
     IndicatorUi indicators[I_COUNT];
     QList<QWidget*> k95Widgets;

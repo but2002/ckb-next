@@ -1,10 +1,10 @@
 #ifndef KBWIDGET_H
 #define KBWIDGET_H
 
+#include "kb.h"
 #include <QFile>
 #include <QListWidgetItem>
 #include <QWidget>
-#include "kb.h"
 
 // Central widget for displaying/controlling a device
 
@@ -12,12 +12,11 @@ namespace Ui {
 class KbWidget;
 }
 
-class KbWidget : public QWidget
-{
+class KbWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit KbWidget(QWidget *parent, Kb* _device);
+    explicit KbWidget(QWidget* parent, Kb* _device);
     ~KbWidget();
 
     // Device handle
@@ -35,10 +34,10 @@ public slots:
     void showLastTab();
 
     // Display firmware update dialog
-    inline void showFwUpdate()          { on_fwUpdButton_clicked(); }
+    inline void showFwUpdate() { on_fwUpdButton_clicked(); }
 
 private:
-    Ui::KbWidget *ui;
+    Ui::KbWidget* ui;
     quint64 lastAutoSave;
 
     KbMode* currentMode;
@@ -55,11 +54,11 @@ private slots:
     void addNewModeItem();
 
     void modeChanged(bool spontaneous = true);
-    void on_modesList_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void on_modesList_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
     void modesList_reordered();
-    void on_modesList_itemChanged(QListWidgetItem *item);
-    void on_modesList_itemClicked(QListWidgetItem *item);
-    void on_modesList_customContextMenuRequested(const QPoint &pos);
+    void on_modesList_itemChanged(QListWidgetItem* item);
+    void on_modesList_itemClicked(QListWidgetItem* item);
+    void on_modesList_customContextMenuRequested(const QPoint& pos);
 
     void devUpdate();
     void modeUpdate();

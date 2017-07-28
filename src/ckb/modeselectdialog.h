@@ -1,8 +1,8 @@
 #ifndef MODESELECTDIALOG_H
 #define MODESELECTDIALOG_H
 
-#include <QDialog>
 #include "kbmode.h"
+#include <QDialog>
 
 // Dialog box that allows selection of modes
 
@@ -10,8 +10,7 @@ namespace Ui {
 class ModeSelectDialog;
 }
 
-class ModeSelectDialog : public QDialog
-{
+class ModeSelectDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -27,7 +26,7 @@ private slots:
     void on_selNoneButton_clicked();
 
 private:
-    Ui::ModeSelectDialog *ui;
+    Ui::ModeSelectDialog* ui;
     QList<KbMode*> _modeList;
 };
 

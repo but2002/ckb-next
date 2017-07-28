@@ -1,3 +1,4 @@
+#include "usb.h"
 #include "command.h"
 #include "device.h"
 #include "devnode.h"
@@ -6,7 +7,6 @@
 #include "led.h"
 #include "notify.h"
 #include "profile.h"
-#include "usb.h"
 
 /// brief .
 ///
@@ -40,8 +40,9 @@ int features_mask = -1;
 /// else it returns ""
 ///
 /// \attention There is also a string defined V_CORSAIR_STR, which returns the device number as string in hex "1b1c".
-const char* vendor_str(short vendor){
-    if(vendor == V_CORSAIR)
+const char* vendor_str(short vendor)
+{
+    if (vendor == V_CORSAIR)
         return "corsair";
     return "";
 }
@@ -67,20 +68,21 @@ const char* vendor_str(short vendor){
 /// The macros need the \a kb*,
 /// product_str() needs the \a product \a ID
 ///
-const char* product_str(short product){
-    if(product == P_K95 || product == P_K95_NRGB || product == P_K95_PLATINUM)
+const char* product_str(short product)
+{
+    if (product == P_K95 || product == P_K95_NRGB || product == P_K95_PLATINUM)
         return "k95";
-    if(product == P_K70 || product == P_K70_NRGB || product == P_K70_LUX || product == P_K70_LUX_NRGB || product == P_K70_RFIRE || product == P_K70_RFIRE_NRGB)
+    if (product == P_K70 || product == P_K70_NRGB || product == P_K70_LUX || product == P_K70_LUX_NRGB || product == P_K70_RFIRE || product == P_K70_RFIRE_NRGB)
         return "k70";
-    if(product == P_K65 || product == P_K65_NRGB || product == P_K65_LUX || product == P_K65_RFIRE)
+    if (product == P_K65 || product == P_K65_NRGB || product == P_K65_LUX || product == P_K65_RFIRE)
         return "k65";
-    if(product == P_STRAFE || product == P_STRAFE_NRGB)
+    if (product == P_STRAFE || product == P_STRAFE_NRGB)
         return "strafe";
-    if(product == P_M65 || product == P_M65_PRO)
+    if (product == P_M65 || product == P_M65_PRO)
         return "m65";
-    if(product == P_SABRE_O || product == P_SABRE_L || product == P_SABRE_N || product == P_SABRE_O2)
+    if (product == P_SABRE_O || product == P_SABRE_L || product == P_SABRE_N || product == P_SABRE_O2)
         return "sabre";
-    if(product == P_SCIMITAR || product == P_SCIMITAR_PRO)
+    if (product == P_SCIMITAR || product == P_SCIMITAR_PRO)
         return "scimitar";
     return "";
 }
@@ -99,7 +101,8 @@ const char* product_str(short product){
 ///
 /// \todo Is the last point really a good decision and always correct?
 ///
-static const devcmd* get_vtable(short vendor, short product){
+static const devcmd* get_vtable(short vendor, short product)
+{
     return IS_MOUSE(vendor, product) ? &vtable_mouse : IS_RGB(vendor, product) ? &vtable_keyboard : &vtable_keyboard_nonrgb;
 }
 
@@ -132,7 +135,8 @@ static const devcmd* get_vtable(short vendor, short product){
 /// \todo Hope to find the need for dmutex usage later.
 /// \n Should this function be declared as pthread_t* function, because of the defintion of pthread-create? But void* works also...
 ///
-static void* devmain(usbdevice* kb){
+static void* devmain(usbdevice* kb)
+{
     /// \attention dmutex should still be locked when this is called
     int kbfifo = kb->infifo - 1;
     ///
@@ -143,7 +147,7 @@ static void* devmain(usbdevice* kb){
     /// After some setup functions, beginning in _setupusb() which has called devmain(),
     /// we read the command input-Fifo designated to that device in an endless loop.
     /// This loop has two possible exits (plus reaction to signals, not mentioned here).
-    while(1){
+    while (1) {
         ///
         /// If the reading via readlines() is successful (we might have read multiple lines),
         /// the interpretation is done by readcmd() iff the connection to the device is still available
@@ -156,15 +160,15 @@ static void* devmain(usbdevice* kb){
         int lines = readlines(kbfifo, linectx, &line);
         pthread_mutex_lock(dmutex(kb));
         // End thread when the handle is removed
-        if(!IS_CONNECTED(kb))
+        if (!IS_CONNECTED(kb))
             break;
         ///
         /// if nothing is in the line buffer (some magic interrupt?),
         /// continue in the endless while without any reaction.
-        if(lines){
+        if (lines) {
             /// \todo readcmd() gets a \b line, not \b lines. Have a look on that later.
             /// \n Is the condition IS_CONNECTED valid? What functions change the condititon for the macro?
-            if(readcmd(kb, line)){
+            if (readcmd(kb, line)) {
                 ///
                 /// If interpretation and communication with the usb device got errors,
                 /// they are signalled by readcmd() (non zero retcode).
@@ -198,7 +202,6 @@ static void* devmain(usbdevice* kb){
 /// It goes via goto to one of two exit labels.
 /// The difference is whether or not an unlock has to be performed on the imutex variable.
 
-
 ///
 /// In both cases, closeusb() is called, then an unlock is performed on the dmutex.
 ///
@@ -211,7 +214,8 @@ static void* devmain(usbdevice* kb){
 /// The basic idea of this routine is the following:
 ///
 
-static void* _setupusb(void* context){
+static void* _setupusb(void* context)
+{
     /// \n First some initialization of kb standard structured and local vars is done.
     /// - \b kb is set to the pointer given from start environment
     /// - local vars \b vendor and \b product are set to the values from the corresponding fields of kb
@@ -229,8 +233,10 @@ static void* _setupusb(void* context){
     short vendor = kb->vendor, product = kb->product;
     const devcmd* vt = kb->vtable = get_vtable(vendor, product);
     kb->features = (IS_RGB(vendor, product) ? FEAT_STD_RGB : FEAT_STD_NRGB) & features_mask;
-    if(IS_MOUSE(vendor, product)) kb->features |= FEAT_ADJRATE;
-    if(IS_MONOCHROME(vendor, product)) kb->features |= FEAT_MONOCHROME;
+    if (IS_MOUSE(vendor, product))
+        kb->features |= FEAT_ADJRATE;
+    if (IS_MONOCHROME(vendor, product))
+        kb->features |= FEAT_MONOCHROME;
     kb->usbdelay = USB_DELAY_DEFAULT;
 
     // Perform OS-specific setup
@@ -244,7 +250,7 @@ static void* _setupusb(void* context){
     /// As a result, some parameters should be set in kb (name, serial, fwversion, epcount = number of usb endpoints),
     /// and all endpoints should be claimed with usbclaim().
     /// Claiming is the only point where os_setupusb() can produce an error (-1, otherwise 0).
-    if(os_setupusb(kb))
+    if (os_setupusb(kb))
         goto fail;
 
     ///
@@ -253,9 +259,9 @@ static void* _setupusb(void* context){
     ///   - serial is set to "<vendor>: <product> -NoID"
     ///   - the name is set to "<vendor> <product>".
     // Make up a device name and serial if they weren't assigned
-    if(!kb->serial[0])
+    if (!kb->serial[0])
         snprintf(kb->serial, SERIAL_LEN, "%04x:%04x-NoID", kb->vendor, kb->product);
-    if(!kb->name[0])
+    if (!kb->name[0])
         snprintf(kb->name, KB_NAME_LEN, "%s %s", vendor_str(kb->vendor), product_str(kb->product));
 
     // Set up an input device for key events
@@ -266,12 +272,12 @@ static void* _setupusb(void* context){
     /// The reason is, if the open fails or not open has been done until now,
     /// that struct member is set to 0, not to -1 or other negative value.
     /// So all usage of this kb->handle must be something like \c "kb->handle - 1", as you can find it in the code.
-    if(os_inputopen(kb))
+    if (os_inputopen(kb))
         goto fail;
     ///
     /// - The next action is to create a separate thread, which gets as parameter kb and starts with os_inputmain().
     /// The thread is immediately detached so that it can return its resource completely independently if it should terminate.
-    if(pthread_create(&kb->inputthread, 0, os_inputmain, kb))
+    if (pthread_create(&kb->inputthread, 0, os_inputmain, kb))
         goto fail;
     pthread_detach(kb->inputthread);
     ///
@@ -279,7 +285,7 @@ static void* _setupusb(void* context){
     /// which initially initializes all LED variables in kb to off and then starts the _ledthread() thread
     /// with kb as parameter and then detaches it.
     /// Here again only the generation of the thread can fail.
-    if(os_setupindicators(kb))
+    if (os_setupindicators(kb))
         goto fail;
 
     // Set up device
@@ -345,7 +351,7 @@ static void* _setupusb(void* context){
     /// Mouse | cmd_active_mouse() similar to cmd_active_kb() | cmd_idle_mouse similar to cmd_idle_kb()
     ///
     /// - If either \a start() succeeded or the next following usb_tryreset(), it goes on, otherwise again a hard abort occurs.
-    if(vt->start(kb, 0) && usb_tryreset(kb))
+    if (vt->start(kb, 0) && usb_tryreset(kb))
         goto fail_noinput;
     ///
     /// - Next, go to mkdevpath(). After securing the EUID (effective UID) especially for macOS, work starts really in _mkdevpath().
@@ -353,7 +359,7 @@ static void* _setupusb(void* context){
     /// either the ckb0/ files \b version, \b pid and \b connected
     /// or the \b cmd command fifo, the first notification fifo \b notify0, \b model and \b serial as well as the \b features of the device and the \b pollrate.
     // Make /dev path
-    if(mkdevpath(kb))
+    if (mkdevpath(kb))
         goto fail_noinput;
     ///
     /// - If all this is done and no error has occurred,
@@ -367,11 +373,11 @@ static void* _setupusb(void* context){
     ///
     /// devmain()'s return value is returned by _setupusb() when we terminate.
     return devmain(kb);
-    ///
-    /// - The remaining code lines are the two exit labels as described above
-    fail:
+///
+/// - The remaining code lines are the two exit labels as described above
+fail:
     pthread_mutex_unlock(imutex(kb));
-    fail_noinput:
+fail_noinput:
     closeusb(kb);
     pthread_mutex_unlock(dmutex(kb));
     return 0;
@@ -383,9 +389,10 @@ static void* _setupusb(void* context){
 /// dmutex must be locked prior to calling this function. The function will unlock it when finished.
 /// In kb->thread the thread id is mentioned, because closeusb() needs this info for joining that thread again.
 ///
-void setupusb(usbdevice* kb){
+void setupusb(usbdevice* kb)
+{
     pthread_mutex_lock(imutex(kb));
-    if(pthread_create(&kb->thread, 0, _setupusb, kb))
+    if (pthread_create(&kb->thread, 0, _setupusb, kb))
         ckb_err("Failed to create USB thread\n");
 }
 
@@ -404,14 +411,15 @@ void setupusb(usbdevice* kb){
 /// \n More precisely setactive() is just a macro to call via the kb->vtable enties either the active() or the idle() function where the vtable points to.
 /// setactive() may return error indications. If so, revertusb() returns -1, otherwise 0 in any other case.
 ///
-int revertusb(usbdevice* kb){
-    if(NEEDS_FW_UPDATE(kb))
+int revertusb(usbdevice* kb)
+{
+    if (NEEDS_FW_UPDATE(kb))
         return 0;
-    if(!HAS_FEATURES(kb, FEAT_RGB)){
+    if (!HAS_FEATURES(kb, FEAT_RGB)) {
         nk95cmd(kb, NK95_HWON);
         return 0;
     }
-    if(setactive(kb, 0))
+    if (setactive(kb, 0))
         return -1;
     return 0;
 }
@@ -423,17 +431,18 @@ int revertusb(usbdevice* kb){
 /// Then perform the initialization via the device specific start() function entry in kb->vtable
 /// and if this is successful also, return the result of the device depenten updatergb() with force=true.
 ///
-int _resetusb(usbdevice* kb, const char* file, int line){
+int _resetusb(usbdevice* kb, const char* file, int line)
+{
     // Perform a USB reset
     DELAY_LONG(kb);
     int res = os_resetusb(kb, file, line);
-    if(res)
+    if (res)
         return res;
     DELAY_LONG(kb);
     // Re-initialize the device
-    if(kb->vtable->start(kb, kb->active) != 0)
+    if (kb->vtable->start(kb, kb->active) != 0)
         return -1;
-    if(kb->vtable->updatergb(kb, 1) != 0)
+    if (kb->vtable->updatergb(kb, 1) != 0)
         return -1;
     return 0;
 }
@@ -462,17 +471,18 @@ int _resetusb(usbdevice* kb, const char* file, int line){
 ///
 /// \todo Why does usb_tryreset() hide the information returned from resetusb()? Isn't it needed by the callers?
 ///
-int usb_tryreset(usbdevice* kb){
-    if(reset_stop)
+int usb_tryreset(usbdevice* kb)
+{
+    if (reset_stop)
         return -1;
     ckb_info("Attempting reset...\n");
-    while(1){
+    while (1) {
         int res = resetusb(kb);
-        if(!res){
+        if (!res) {
             ckb_info("Reset success\n");
             return 0;
         }
-        if(res == -2 || reset_stop)
+        if (res == -2 || reset_stop)
             break;
     }
     ckb_err("Reset failed. Disconnecting.\n");
@@ -529,23 +539,24 @@ extern int hwload_mode;
 /// \n This must be considered when reading the code;
 /// The "break" on successful block transfer leaves the inner while, not the for (...).
 ///
-int _usbsend(usbdevice* kb, const uchar* messages, int count, const char* file, int line){
+int _usbsend(usbdevice* kb, const uchar* messages, int count, const char* file, int line)
+{
     int total_sent = 0;
-    for(int i = 0; i < count; i++){
+    for (int i = 0; i < count; i++) {
         // Send each message via the OS function
-        while(1){
+        while (1) {
             pthread_mutex_lock(mmutex(kb)); ///< Synchonization between macro and color information
             DELAY_SHORT(kb);
             int res = os_usbsend(kb, messages + i * MSG_SIZE, 0, file, line);
             pthread_mutex_unlock(mmutex(kb));
-            if(res == 0)
+            if (res == 0)
                 return 0;
-            else if(res != -1){
+            else if (res != -1) {
                 total_sent += res;
                 break;
             }
             // Stop immediately if the program is shutting down or hardware load is set to tryonce
-            if(reset_stop || hwload_mode != 2)
+            if (reset_stop || hwload_mode != 2)
                 return 0;
             // Retry as long as the result is temporary failure
             DELAY_LONG(kb);
@@ -598,9 +609,10 @@ int _usbsend(usbdevice* kb, const uchar* messages, int count, const char* file, 
 /// The buffers behind \b out_msg and \b in_msg are MSG_SIZE at least (currently 64 Bytes).
 /// More is ok but useless, less brings unpredictable behavior.
 ///
-int _usbrecv(usbdevice* kb, const uchar* out_msg, uchar* in_msg, const char* file, int line){
+int _usbrecv(usbdevice* kb, const uchar* out_msg, uchar* in_msg, const char* file, int line)
+{
     // Try a maximum of 5 times
-    for (int try = 0; try < 5; try++) {
+    for (int try = 0; try < 5; try ++) {
         // Send the output message
         pthread_mutex_lock(mmutex(kb)); ///< Synchonization between macro and color information
         DELAY_SHORT(kb);
@@ -618,11 +630,11 @@ int _usbrecv(usbdevice* kb, const uchar* out_msg, uchar* in_msg, const char* fil
         // Wait for the response
         DELAY_MEDIUM(kb);
         res = os_usbrecv(kb, in_msg, file, line);
-        if(res == 0)
+        if (res == 0)
             return 0;
-        else if(res != -1)
+        else if (res != -1)
             return res;
-        if(reset_stop || hwload_mode != 2)
+        if (reset_stop || hwload_mode != 2)
             return 0;
         DELAY_LONG(kb);
     }
@@ -674,9 +686,10 @@ int _usbrecv(usbdevice* kb, const uchar* out_msg, uchar* in_msg, const char* fil
 /// (no matter what the called functions return),
 /// and closeusb() always returns zero (success).
 ///
-int closeusb(usbdevice* kb){
+int closeusb(usbdevice* kb)
+{
     pthread_mutex_lock(imutex(kb));
-    if(kb->handle){
+    if (kb->handle) {
         int index = INDEX_OF(kb, keyboard);
         ckb_info("Disconnecting %s%d\n", devpath, index);
         os_inputclose(kb);
@@ -694,7 +707,7 @@ int closeusb(usbdevice* kb){
     pthread_mutex_lock(dmutex(kb));
 
     // Delete the profile and the control path
-    if(!kb->vtable)
+    if (!kb->vtable)
         return 0;
     kb->vtable->freeprofile(kb);
     memset(kb, 0, sizeof(usbdevice));

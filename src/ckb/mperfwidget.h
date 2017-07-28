@@ -1,26 +1,25 @@
 #ifndef MPERFWIDGET_H
 #define MPERFWIDGET_H
 
-#include <QWidget>
-#include <QSlider>
-#include <QSpinBox>
+#include "colorbutton.h"
+#include "kbperf.h"
+#include "kbprofile.h"
 #include <QCheckBox>
 #include <QRadioButton>
 #include <QSignalMapper>
-#include "kbperf.h"
-#include "kbprofile.h"
-#include "colorbutton.h"
+#include <QSlider>
+#include <QSpinBox>
+#include <QWidget>
 
 namespace Ui {
 class MPerfWidget;
 }
 
-class MPerfWidget : public QWidget
-{
+class MPerfWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit MPerfWidget(QWidget *parent = 0);
+    explicit MPerfWidget(QWidget* parent = 0);
     ~MPerfWidget();
 
     void setPerf(KbPerf* newPerf, KbProfile* newProfile);
@@ -29,15 +28,15 @@ public:
     static const int DPI_MIN = KbPerf::DPI_MIN, DPI_MAX = KbPerf::DPI_MAX;
 
 private:
-    Ui::MPerfWidget *ui;
+    Ui::MPerfWidget* ui;
 
     KbPerf* perf;
     KbProfile* profile;
 
     struct DpiUi {
         ColorButton* indicator;
-        QSlider* xSlider, *ySlider;
-        QSpinBox* xBox, *yBox;
+        QSlider *xSlider, *ySlider;
+        QSpinBox *xBox, *yBox;
         QCheckBox* enableCheck;
     };
     DpiUi stages[DPI_COUNT];

@@ -1,19 +1,18 @@
 #ifndef ANIMSETTINGDIALOG_H
 #define ANIMSETTINGDIALOG_H
 
+#include "kbanim.h"
 #include <QCheckBox>
 #include <QDialog>
 #include <QFrame>
 #include <QSignalMapper>
 #include <QSpinBox>
-#include "kbanim.h"
 
 namespace Ui {
 class AnimSettingDialog;
 }
 
-class AnimSettingDialog : public QDialog
-{
+class AnimSettingDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -26,16 +25,16 @@ public:
 
 private:
     Ui::AnimSettingDialog* ui;
-    QCheckBox*  stopCheck, *kpStopCheck;
-    bool        hasRepeat;
+    QCheckBox *stopCheck, *kpStopCheck;
+    bool hasRepeat;
 
     KbAnim* _anim;
-    double  lastDuration;
+    double lastDuration;
     QMap<QString, QWidget*> settingWidgets;
-    QSignalMapper           updateMapper;
+    QSignalMapper updateMapper;
 
-    QMap<QString, QSpinBox*>    angleSpinners;
-    QSignalMapper               angleDialMapper, angleSpinnerMapper;
+    QMap<QString, QSpinBox*> angleSpinners;
+    QSignalMapper angleDialMapper, angleSpinnerMapper;
 
     QFrame* hLine();
 

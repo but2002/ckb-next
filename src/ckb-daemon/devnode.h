@@ -5,7 +5,7 @@
 #include "usb.h"
 
 /// Device path base ("/dev/input/ckb" or "/var/run/ckb")
-const char *const devpath;
+const char* const devpath;
 
 /// Group ID for the control nodes. -1 to give read/write access to everybody
 extern long gid;
@@ -41,4 +41,4 @@ void readlines_ctx_init(readlines_ctx* ctx);
 void readlines_ctx_free(readlines_ctx ctx);
 unsigned readlines(int fd, readlines_ctx ctx, const char** input);
 
-#endif  // DEVNODE_H
+#endif // DEVNODE_H

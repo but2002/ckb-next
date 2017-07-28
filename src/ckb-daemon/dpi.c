@@ -1,32 +1,33 @@
 #include "dpi.h"
 #include "usb.h"
 
-void cmd_dpi(usbdevice* kb, usbmode* mode, int dummy, const char* stages, const char* values){
+void cmd_dpi(usbdevice* kb, usbmode* mode, int dummy, const char* stages, const char* values)
+{
     int disable = 0;
     ushort x, y;
     // Try to scan X,Y values
-    if(sscanf(values, "%hu,%hu", &x, &y) != 2){
+    if (sscanf(values, "%hu,%hu", &x, &y) != 2) {
         // If that doesn't work, scan single number
-        if(sscanf(values, "%hu", &x) == 1)
+        if (sscanf(values, "%hu", &x) == 1)
             y = x;
-        else if(!strncmp(values, "off", 3))
+        else if (!strncmp(values, "off", 3))
             // If the right side says "off", disable the level(s)
             disable = 1;
         else
             // Otherwise, quit
             return;
     }
-    if((x == 0 || y == 0) && !disable)
+    if ((x == 0 || y == 0) && !disable)
         return;
     // Scan the left side for stage numbers (comma-separated)
     int left = strlen(stages);
     int position = 0, field = 0;
     char stagename[3];
-    while(position < left && sscanf(stages + position, "%2[^,]%n", stagename, &field) == 1){
+    while (position < left && sscanf(stages + position, "%2[^,]%n", stagename, &field) == 1) {
         uchar stagenum;
-        if(sscanf(stagename, "%hhu", &stagenum) && stagenum < DPI_COUNT){
+        if (sscanf(stagename, "%hhu", &stagenum) && stagenum < DPI_COUNT) {
             // Set DPI for this stage
-            if(disable){
+            if (disable) {
                 mode->dpi.enabled &= ~(1 << stagenum);
                 mode->dpi.x[stagenum] = 0;
                 mode->dpi.y[stagenum] = 0;
@@ -36,48 +37,52 @@ void cmd_dpi(usbdevice* kb, usbmode* mode, int dummy, const char* stages, const 
                 mode->dpi.y[stagenum] = y;
             }
         }
-        if(stages[position += field] == ',')
+        if (stages[position += field] == ',')
             position++;
     }
 }
 
-void cmd_dpisel(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char* stage){
+void cmd_dpisel(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char* stage)
+{
     uchar stagenum;
-    if(sscanf(stage, "%hhu", &stagenum) != 1)
+    if (sscanf(stage, "%hhu", &stagenum) != 1)
         return;
-    if(stagenum > DPI_COUNT)
+    if (stagenum > DPI_COUNT)
         return;
     mode->dpi.current = stagenum;
 }
 
-void cmd_lift(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char* height){
+void cmd_lift(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char* height)
+{
     uchar heightnum;
-    if(sscanf(height, "%hhu", &heightnum) != 1)
+    if (sscanf(height, "%hhu", &heightnum) != 1)
         return;
-    if(heightnum > LIFT_MAX || heightnum < LIFT_MIN)
+    if (heightnum > LIFT_MAX || heightnum < LIFT_MIN)
         return;
     mode->dpi.lift = heightnum;
 }
 
-void cmd_snap(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char* enable){
-    if(!strcmp(enable, "on"))
+void cmd_snap(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char* enable)
+{
+    if (!strcmp(enable, "on"))
         mode->dpi.snap = 1;
-    if(!strcmp(enable, "off"))
+    if (!strcmp(enable, "off"))
         mode->dpi.snap = 0;
 }
 
-char* printdpi(const dpiset* dpi, const usbdevice* kb){
+char* printdpi(const dpiset* dpi, const usbdevice* kb)
+{
     // Print all DPI settings
     const int BUFFER_LEN = 100;
     char* buffer = malloc(BUFFER_LEN);
     int length = 0;
-    for(int i = 0; i < DPI_COUNT; i++){
+    for (int i = 0; i < DPI_COUNT; i++) {
         // Print the stage number
         int newlen = 0;
         snprintf(buffer + length, BUFFER_LEN - length, length == 0 ? "%d%n" : " %d%n", i, &newlen);
         length += newlen;
         // Print the DPI settings
-        if(!(dpi->enabled & (1 << i)))
+        if (!(dpi->enabled & (1 << i)))
             snprintf(buffer + length, BUFFER_LEN - length, ":off%n", &newlen);
         else
             snprintf(buffer + length, BUFFER_LEN - length, ":%u,%u%n", dpi->x[i], dpi->y[i], &newlen);
@@ -86,24 +91,25 @@ char* printdpi(const dpiset* dpi, const usbdevice* kb){
     return buffer;
 }
 
-int updatedpi(usbdevice* kb, int force){
-    if(!kb->active)
+int updatedpi(usbdevice* kb, int force)
+{
+    if (!kb->active)
         return 0;
     dpiset* lastdpi = &kb->profile->lastdpi;
     dpiset* newdpi = &kb->profile->currentmode->dpi;
     // Don't do anything if the settings haven't changed
-    if(!force && !lastdpi->forceupdate && !newdpi->forceupdate
-            && !memcmp(lastdpi, newdpi, sizeof(dpiset)))
+    if (!force && !lastdpi->forceupdate && !newdpi->forceupdate
+        && !memcmp(lastdpi, newdpi, sizeof(dpiset)))
         return 0;
     lastdpi->forceupdate = newdpi->forceupdate = 0;
 
     // Send X/Y DPIs
-    for(int i = 0; i < DPI_COUNT; i++){
+    for (int i = 0; i < DPI_COUNT; i++) {
         uchar data_pkt[MSG_SIZE] = { 0x07, 0x13, 0xd0, 0 };
         data_pkt[2] |= i;
         *(ushort*)(data_pkt + 5) = newdpi->x[i];
         *(ushort*)(data_pkt + 7) = newdpi->y[i];
-        if(!usbsend(kb, data_pkt, 1))
+        if (!usbsend(kb, data_pkt, 1))
             return -1;
     }
 
@@ -114,16 +120,17 @@ int updatedpi(usbdevice* kb, int force){
         { 0x07, 0x13, 0x03, 0, newdpi->lift },
         { 0x07, 0x13, 0x04, 0, newdpi->snap, 0x05 }
     };
-    if(!usbsend(kb, data_pkt[0], 4))
+    if (!usbsend(kb, data_pkt[0], 4))
         return -2;
     // Finished
     memcpy(lastdpi, newdpi, sizeof(dpiset));
     return 0;
 }
 
-int savedpi(usbdevice* kb, dpiset* dpi, lighting* light){
+int savedpi(usbdevice* kb, dpiset* dpi, lighting* light)
+{
     // Send X/Y DPIs
-    for(int i = 0; i < DPI_COUNT; i++){
+    for (int i = 0; i < DPI_COUNT; i++) {
         uchar data_pkt[MSG_SIZE] = { 0x07, 0x13, 0xd0, 1 };
         data_pkt[2] |= i;
         *(ushort*)(data_pkt + 5) = dpi->x[i];
@@ -132,7 +139,7 @@ int savedpi(usbdevice* kb, dpiset* dpi, lighting* light){
         data_pkt[9] = light->r[LED_MOUSE + N_MOUSE_ZONES + i];
         data_pkt[10] = light->g[LED_MOUSE + N_MOUSE_ZONES + i];
         data_pkt[11] = light->b[LED_MOUSE + N_MOUSE_ZONES + i];
-        if(!usbsend(kb, data_pkt, 1))
+        if (!usbsend(kb, data_pkt, 1))
             return -1;
     }
 
@@ -143,25 +150,34 @@ int savedpi(usbdevice* kb, dpiset* dpi, lighting* light){
         { 0x07, 0x13, 0x03, 1, dpi->lift },
         { 0x07, 0x13, 0x04, 1, dpi->snap, 0x05 }
     };
-    if(!usbsend(kb, data_pkt[0], 4))
+    if (!usbsend(kb, data_pkt[0], 4))
         return -2;
     // Finished
     return 0;
 }
 
-int loaddpi(usbdevice* kb, dpiset* dpi, lighting* light){
+int loaddpi(usbdevice* kb, dpiset* dpi, lighting* light)
+{
     // Ask for settings
     uchar data_pkt[4][MSG_SIZE] = {
-        { 0x0e, 0x13, 0x05, 1, },
-        { 0x0e, 0x13, 0x02, 1, },
-        { 0x0e, 0x13, 0x03, 1, },
-        { 0x0e, 0x13, 0x04, 1, }
+        {
+            0x0e, 0x13, 0x05, 1,
+        },
+        {
+            0x0e, 0x13, 0x02, 1,
+        },
+        {
+            0x0e, 0x13, 0x03, 1,
+        },
+        {
+            0x0e, 0x13, 0x04, 1,
+        }
     };
     uchar in_pkt[4][MSG_SIZE];
-    for(int i = 0; i < 4; i++){
-        if(!usbrecv(kb, data_pkt[i], in_pkt[i]))
+    for (int i = 0; i < 4; i++) {
+        if (!usbrecv(kb, data_pkt[i], in_pkt[i]))
             return -2;
-        if(memcmp(in_pkt[i], data_pkt[i], 4)){
+        if (memcmp(in_pkt[i], data_pkt[i], 4)) {
             ckb_err("Bad input header\n");
             return -3;
         }
@@ -170,21 +186,21 @@ int loaddpi(usbdevice* kb, dpiset* dpi, lighting* light){
     dpi->enabled = in_pkt[0][4];
     dpi->enabled &= (1 << DPI_COUNT) - 1;
     dpi->current = in_pkt[1][4];
-    if(dpi->current >= DPI_COUNT)
+    if (dpi->current >= DPI_COUNT)
         dpi->current = 0;
     dpi->lift = in_pkt[2][4];
-    if(dpi->lift < LIFT_MIN || dpi->lift > LIFT_MAX)
+    if (dpi->lift < LIFT_MIN || dpi->lift > LIFT_MAX)
         dpi->lift = LIFT_MIN;
     dpi->snap = !!in_pkt[3][4];
 
     // Get X/Y DPIs
-    for(int i = 0; i < DPI_COUNT; i++){
+    for (int i = 0; i < DPI_COUNT; i++) {
         uchar data_pkt[MSG_SIZE] = { 0x0e, 0x13, 0xd0, 1 };
         uchar in_pkt[MSG_SIZE];
         data_pkt[2] |= i;
-        if(!usbrecv(kb, data_pkt, in_pkt))
+        if (!usbrecv(kb, data_pkt, in_pkt))
             return -2;
-        if(memcmp(in_pkt, data_pkt, 4)){
+        if (memcmp(in_pkt, data_pkt, 4)) {
             ckb_err("Bad input header\n");
             return -3;
         }

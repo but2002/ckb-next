@@ -1,8 +1,8 @@
 #ifndef DPI_H
 #define DPI_H
 
-#include "includes.h"
 #include "device.h"
+#include "includes.h"
 
 // DPI functions are mouse-only; do not use them with keyboards.
 // Lock dmutex before using commands (see device.h)
@@ -28,4 +28,3 @@ void cmd_lift(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char* 
 void cmd_snap(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char* enable);
 
 #endif // DPI_H
-

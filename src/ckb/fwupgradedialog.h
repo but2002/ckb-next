@@ -1,17 +1,16 @@
 #ifndef FWUPGRADEDIALOG_H
 #define FWUPGRADEDIALOG_H
 
+#include "kb.h"
 #include <QCloseEvent>
 #include <QDialog>
 #include <QEventLoop>
-#include "kb.h"
 
 namespace Ui {
 class FwUpgradeDialog;
 }
 
-class FwUpgradeDialog : public QDialog
-{
+class FwUpgradeDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -29,21 +28,21 @@ private slots:
     void on_actionButton_clicked();
 
 private:
-    Ui::FwUpgradeDialog *ui;
+    Ui::FwUpgradeDialog* ui;
     void closeEvent(QCloseEvent* event);
 
     // FW blob has to be saved to a temporary path for processing.
     // saveBlob() to save, cleanBlob() to remove.
-    QString         savePath;
-    const QString&  saveBlob();
-    void            cleanBlob();
+    QString savePath;
+    const QString& saveBlob();
+    void cleanBlob();
 
-    QByteArray  blob;
-    Kb*         kb;
+    QByteArray blob;
+    Kb* kb;
 
     // Event loop for synchronous exec()
     QEventLoop* evLoop;
-    bool        exitSuccess;
+    bool exitSuccess;
 };
 
 #endif // FWUPGRADEDIALOG_H

@@ -1,8 +1,8 @@
 #ifndef NOTIFY_H
 #define NOTIFY_H
 
-#include "includes.h"
 #include "device.h"
+#include "includes.h"
 
 // Note: Lock imutex (see device.h) before accessing notification settings/nodes
 // The cmd_ functions do this automatically, all others need to be done before
@@ -28,4 +28,4 @@ void cmd_get(usbdevice* kb, usbmode* mode, int nnumber, int dummy, const char* s
 // At last it does a restart of the daemon
 void cmd_restart(usbdevice* kb, usbmode* mode, int nnumber, int dummy, const char* content);
 
-#endif  // NOTIFY_H
+#endif // NOTIFY_H

@@ -1,8 +1,8 @@
 #ifndef LED_H
 #define LED_H
 
-#include "includes.h"
 #include "device.h"
+#include "includes.h"
 
 // Note: Lock dmutex before using LED commands (see device.h)
 
@@ -32,4 +32,4 @@ void cmd_iauto(usbdevice* kb, usbmode* mode, int dummy1, int dummy2, const char*
 // Command: Set indicator notifications
 void cmd_inotify(usbdevice* kb, usbmode* mode, int nnumber, int dummy, const char* led);
 
-#endif  // LED_H
+#endif // LED_H
