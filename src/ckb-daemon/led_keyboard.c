@@ -98,7 +98,7 @@ int updatergb_kb(usbdevice* kb, int force){
         return 0;
     lastlight->forceupdate = newlight->forceupdate = 0;
 
-    if(IS_FULLRANGE(kb)){
+    if(IS_FULLRANGE(kb) && !IS_K55(kb)){
         // Update strafe sidelights if necessary
         if(lastlight->sidelight != newlight->sidelight) {
             uchar data_pkt[2][MSG_SIZE] = {
@@ -141,7 +141,7 @@ int updatergb_kb(usbdevice* kb, int force){
     } else if (IS_K55(kb)) {
         // The K55 has its own packet type, because it only has three lighting zones.
         uchar data_pkt[MSG_SIZE] = { 0x07, 0x25, 0x00 };
-        makergb_k55(kb, data_pkt);
+        makergb_k55(newlight, data_pkt);
         if (!usbsend(kb, data_pkt, 1))
             return -1;
     } else {
